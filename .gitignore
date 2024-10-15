@@ -82,4 +82,3 @@ Makefile
 # Backup and temporary files
 *~ 
 *.swp
-test/something/now
