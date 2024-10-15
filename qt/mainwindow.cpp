@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->
+    ui->executeButton->setDisabled(true);
 }
 
 MainWindow::~MainWindow()
@@ -20,22 +20,27 @@ MainWindow::~MainWindow()
 void MainWindow::on_selectInAndOutFoldersButton_clicked()
 {
     sourceFolder = QFileDialog::getExistingDirectory(this, tr("Select Source Folder"), "");
-    if (!sourceFolder.isEmpty())
+    if (sourceFolder.isEmpty())
     {
-        ui->photoLabel->setText("Source: " + sourceFolder + "is empty.");
-    }
+        ui->photoLabel->setText("Source: " + sourceFolder + " was NOT selected.");
+    }else
+        ui->photoLabel->setText("Source: " + sourceFolder + " was selected successfully.");
 
     destinationFolder = QFileDialog::getExistingDirectory(this, tr("Select Destination Folder"), "");
-    if (!destinationFolder.isEmpty())
+    if (destinationFolder.isEmpty())
     {
-        ui->photoLabel->setText("Destination: " + destinationFolder + "was not empty when first accessed.");
-    }
+        ui->photoLabel->setText("Destination: " + destinationFolder + " was NOT selected.");
+    }else
+        ui->photoLabel->setText("Destination: " + destinationFolder + " was selected successfully.");
+
 
     if(sourceFolder.isEmpty() || destinationFolder.isEmpty()){
         ui->photoLabel->setText("Operation will be repeted. Select the source and destination again.");
         on_selectInAndOutFoldersButton_clicked();
         return;
     }
+
+    ui->executeButton->setDisabled(false);
 }
 
 // Execute the flipping process
@@ -47,15 +52,20 @@ void MainWindow::on_executeButton_clicked()
         return;
     }
 
-    int flipCode = 0;
+    int flipCode = 2;
 
-    if (ui->horizontalRadioButton->isChecked() && ui->verticalRadioButton->isChecked())
+    if (ui->fullFlipRadioButton->isChecked())
         flipCode = -1; // Both flips
     else if (ui->horizontalRadioButton->isChecked())
         flipCode = 1; // Horizontal flip
     else if (ui->verticalRadioButton->isChecked())
         flipCode = 0; // Vertical flip
 
+    if(flipCode == 2)
+    {
+        ui->photoLabel->setText("Please select a flip type before trying to initiate the process.");
+        return;
+    }
 
     processImages(flipCode);
     ui->photoLabel->setText("Processing complete.");

@@ -33,6 +33,7 @@ public:
     QRadioButton *horizontalRadioButton;
     QRadioButton *verticalRadioButton;
     QLabel *label;
+    QRadioButton *fullFlipRadioButton;
     QMenuBar *menubar;
     QMenu *menuImgApp;
     QStatusBar *statusbar;
@@ -62,6 +63,9 @@ public:
         label = new QLabel(centralwidget);
         label->setObjectName("label");
         label->setGeometry(QRect(30, 210, 49, 16));
+        fullFlipRadioButton = new QRadioButton(centralwidget);
+        fullFlipRadioButton->setObjectName("fullFlipRadioButton");
+        fullFlipRadioButton->setGeometry(QRect(20, 300, 91, 22));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
@@ -89,6 +93,7 @@ public:
         horizontalRadioButton->setText(QCoreApplication::translate("MainWindow", "Horizontal", nullptr));
         verticalRadioButton->setText(QCoreApplication::translate("MainWindow", "Vertical", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "Flip types", nullptr));
+        fullFlipRadioButton->setText(QCoreApplication::translate("MainWindow", "Both", nullptr));
         menuImgApp->setTitle(QCoreApplication::translate("MainWindow", "ImgApp", nullptr));
     } // retranslateUi
 
