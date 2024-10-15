@@ -62,6 +62,6 @@ void MainWindow::displayImageToLabel(){
 
 void MainWindow::on_saveImgButton_clicked()
 {
-     imwrite("E:\\output_image.png", tempPhoto);
+     imwrite("E:\\output_image.png", photo);
 }
 
