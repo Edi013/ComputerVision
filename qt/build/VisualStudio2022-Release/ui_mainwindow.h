@@ -17,6 +17,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QWidget>
 
@@ -26,13 +27,12 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralwidget;
-    QPushButton *openButton;
     QLabel *photoLabel;
-    QPushButton *verticalFlipButton;
-    QPushButton *horizontalFlipButton;
-    QPushButton *fullFlipButton;
+    QPushButton *selectInAndOutFoldersButton;
+    QPushButton *executeButton;
+    QRadioButton *horizontalRadioButton;
+    QRadioButton *verticalRadioButton;
     QLabel *label;
-    QPushButton *saveImgButton;
     QMenuBar *menubar;
     QMenu *menuImgApp;
     QStatusBar *statusbar;
@@ -44,31 +44,28 @@ public:
         MainWindow->resize(800, 600);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
-        openButton = new QPushButton(centralwidget);
-        openButton->setObjectName("openButton");
-        openButton->setGeometry(QRect(30, 50, 83, 29));
         photoLabel = new QLabel(centralwidget);
         photoLabel->setObjectName("photoLabel");
         photoLabel->setGeometry(QRect(142, 10, 651, 551));
-        verticalFlipButton = new QPushButton(centralwidget);
-        verticalFlipButton->setObjectName("verticalFlipButton");
-        verticalFlipButton->setGeometry(QRect(30, 270, 83, 29));
-        horizontalFlipButton = new QPushButton(centralwidget);
-        horizontalFlipButton->setObjectName("horizontalFlipButton");
-        horizontalFlipButton->setGeometry(QRect(30, 220, 83, 29));
-        fullFlipButton = new QPushButton(centralwidget);
-        fullFlipButton->setObjectName("fullFlipButton");
-        fullFlipButton->setGeometry(QRect(30, 320, 83, 29));
+        selectInAndOutFoldersButton = new QPushButton(centralwidget);
+        selectInAndOutFoldersButton->setObjectName("selectInAndOutFoldersButton");
+        selectInAndOutFoldersButton->setGeometry(QRect(20, 170, 80, 24));
+        executeButton = new QPushButton(centralwidget);
+        executeButton->setObjectName("executeButton");
+        executeButton->setGeometry(QRect(20, 330, 80, 24));
+        horizontalRadioButton = new QRadioButton(centralwidget);
+        horizontalRadioButton->setObjectName("horizontalRadioButton");
+        horizontalRadioButton->setGeometry(QRect(20, 240, 91, 22));
+        verticalRadioButton = new QRadioButton(centralwidget);
+        verticalRadioButton->setObjectName("verticalRadioButton");
+        verticalRadioButton->setGeometry(QRect(20, 270, 91, 22));
         label = new QLabel(centralwidget);
         label->setObjectName("label");
-        label->setGeometry(QRect(40, 180, 131, 21));
-        saveImgButton = new QPushButton(centralwidget);
-        saveImgButton->setObjectName("saveImgButton");
-        saveImgButton->setGeometry(QRect(30, 370, 83, 29));
+        label->setGeometry(QRect(30, 210, 49, 16));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 25));
+        menubar->setGeometry(QRect(0, 0, 800, 21));
         menuImgApp = new QMenu(menubar);
         menuImgApp->setObjectName("menuImgApp");
         MainWindow->setMenuBar(menubar);
@@ -86,13 +83,12 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
-        openButton->setText(QCoreApplication::translate("MainWindow", "Open", nullptr));
         photoLabel->setText(QString());
-        verticalFlipButton->setText(QCoreApplication::translate("MainWindow", "Vertical", nullptr));
-        horizontalFlipButton->setText(QCoreApplication::translate("MainWindow", "Horizontal", nullptr));
-        fullFlipButton->setText(QCoreApplication::translate("MainWindow", "Both", nullptr));
-        label->setText(QCoreApplication::translate("MainWindow", "Mirroring", nullptr));
-        saveImgButton->setText(QCoreApplication::translate("MainWindow", "Save Img", nullptr));
+        selectInAndOutFoldersButton->setText(QCoreApplication::translate("MainWindow", "InOut Folders", nullptr));
+        executeButton->setText(QCoreApplication::translate("MainWindow", "Execute", nullptr));
+        horizontalRadioButton->setText(QCoreApplication::translate("MainWindow", "Horizontal", nullptr));
+        verticalRadioButton->setText(QCoreApplication::translate("MainWindow", "Vertical", nullptr));
+        label->setText(QCoreApplication::translate("MainWindow", "Flip types", nullptr));
         menuImgApp->setTitle(QCoreApplication::translate("MainWindow", "ImgApp", nullptr));
     } // retranslateUi
 

@@ -6,9 +6,12 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <QFileDialog>
+#include <QRadioButton>
+#include <filesystem>
 
 using namespace std;
 using namespace cv;
+namespace fs = std::filesystem;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,20 +28,17 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_openButton_clicked();
-
-    void on_horizontalFlipButton_clicked();
-
-    void on_verticalFlipButton_clicked();
-
-    void on_fullFlipButton_clicked();
-    void displayImageToLabel();
-
-    void on_saveImgButton_clicked();
+    void on_selectInAndOutFoldersButton_clicked();
+    void on_executeButton_clicked();
 
 private:
     Ui::MainWindow *ui;
+    QString sourceFolder;
+    QString destinationFolder;
+
     Mat photo;
-    Mat tempPhoto;
+    Mat photoAdapted;
+
+    void processImages(int flipCode);
 };
 #endif // MAINWINDOW_H

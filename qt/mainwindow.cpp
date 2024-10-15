@@ -1,11 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <opencv2/opencv.hpp>
+#include <filesystem>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->
 }
 
 MainWindow::~MainWindow()
@@ -13,55 +16,68 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_openButton_clicked()
+// Select destination folder
+void MainWindow::on_selectInAndOutFoldersButton_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Open image"), ".",
-                                                    tr("Image FIles ((*.png *.jpg *.jpeg *.bmp)"));
-    photo = imread(fileName.toLatin1().data());
-    if(photo.data)
+    sourceFolder = QFileDialog::getExistingDirectory(this, tr("Select Source Folder"), "");
+    if (!sourceFolder.isEmpty())
     {
-        ui->openButton->setEnabled(true);
-        cvtColor(photo, tempPhoto, COLOR_BGR2RGB);
-        displayImageToLabel();
+        ui->photoLabel->setText("Source: " + sourceFolder + "is empty.");
     }
-    else{
-        ui->openButton->setEnabled(false);
-        ui->horizontalFlipButton->setEnabled(false);
-        ui->verticalFlipButton->setEnabled(false);
-        ui->fullFlipButton->setEnabled(false);
+
+    destinationFolder = QFileDialog::getExistingDirectory(this, tr("Select Destination Folder"), "");
+    if (!destinationFolder.isEmpty())
+    {
+        ui->photoLabel->setText("Destination: " + destinationFolder + "was not empty when first accessed.");
+    }
+
+    if(sourceFolder.isEmpty() || destinationFolder.isEmpty()){
+        ui->photoLabel->setText("Operation will be repeted. Select the source and destination again.");
+        on_selectInAndOutFoldersButton_clicked();
+        return;
     }
 }
 
-
-void MainWindow::on_horizontalFlipButton_clicked()
+// Execute the flipping process
+void MainWindow::on_executeButton_clicked()
 {
-        flip(tempPhoto, tempPhoto, 1);
-        displayImageToLabel();
+    if (sourceFolder.isEmpty() || destinationFolder.isEmpty())
+    {
+        ui->photoLabel->setText("Please select both source and destination folders.");
+        return;
+    }
+
+    int flipCode = 0;
+
+    if (ui->horizontalRadioButton->isChecked() && ui->verticalRadioButton->isChecked())
+        flipCode = -1; // Both flips
+    else if (ui->horizontalRadioButton->isChecked())
+        flipCode = 1; // Horizontal flip
+    else if (ui->verticalRadioButton->isChecked())
+        flipCode = 0; // Vertical flip
+
+
+    processImages(flipCode);
+    ui->photoLabel->setText("Processing complete.");
 }
 
-
-void MainWindow::on_verticalFlipButton_clicked()
+void MainWindow::processImages(int flipCode)
 {
-    flip(tempPhoto, tempPhoto, 0);
-    displayImageToLabel();
+    for (const auto& entry : fs::directory_iterator(sourceFolder.toStdString()))
+    {
+        if (entry.is_regular_file())
+        {
+            string filePath = entry.path().string();
+            Mat image = imread(filePath);
+            if (!image.empty())
+            {
+                Mat flippedImage;
+                flip(image, flippedImage, flipCode);
+
+                string fileName = entry.path().filename().string();
+                string outputFilePath = destinationFolder.toStdString() + "/" + fileName;
+                imwrite(outputFilePath, flippedImage);
+            }
+        }
+    }
 }
-
-
-void MainWindow::on_fullFlipButton_clicked()
-{
-    flip(tempPhoto, tempPhoto, -1);
-    displayImageToLabel();
-}
-
-void MainWindow::displayImageToLabel(){
-    QImage img= QImage((uchar*) tempPhoto.data, tempPhoto.cols, tempPhoto.rows, tempPhoto.step, QImage::Format_RGB888);
-    ui->photoLabel->setPixmap(QPixmap::fromImage(img).scaled(ui->photoLabel->size(), Qt::KeepAspectRatio));
-}
-
-
-void MainWindow::on_saveImgButton_clicked()
-{
-     imwrite("E:\\output_image.png", photo);
-}
-
