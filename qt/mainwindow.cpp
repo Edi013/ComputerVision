@@ -35,7 +35,7 @@ void MainWindow::on_selectInAndOutFoldersButton_clicked()
 
 
     if(sourceFolder.isEmpty() || destinationFolder.isEmpty()){
-        ui->photoLabel->setText("Operation will be repeted. Select the source and destination again.");
+        ui->photoLabel->setText("Operation will be repeted. Select the source and destination again. For EXIT select any folders, than press x in the main window.");
         on_selectInAndOutFoldersButton_clicked();
         return;
     }
