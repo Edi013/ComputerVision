@@ -20,28 +20,30 @@ void MainWindow::on_openButton_clicked()
                                                     tr("Image FIles ((*.png *.jpg *.jpeg *.bmp)"));
     photo = imread(fileName.toLatin1().data());
     if(photo.data)
+    {
         ui->openButton->setEnabled(true);
-    else
+        cvtColor(photo, tempPhoto, COLOR_BGR2RGB);
+        displayImageToLabel();
+    }
+    else{
         ui->openButton->setEnabled(false);
-
-    cvtColor(photo, tempPhoto, COLOR_BGR2RGB);
-
-    displayImageToLabel();
+        ui->horizontalFlipButton->setEnabled(false);
+        ui->verticalFlipButton->setEnabled(false);
+        ui->fullFlipButton->setEnabled(false);
+    }
 }
 
 
 void MainWindow::on_horizontalFlipButton_clicked()
 {
-    flip(tempPhoto, tempPhoto, 1);
-
-    displayImageToLabel();
+        flip(tempPhoto, tempPhoto, 1);
+        displayImageToLabel();
 }
 
 
 void MainWindow::on_verticalFlipButton_clicked()
 {
     flip(tempPhoto, tempPhoto, 0);
-
     displayImageToLabel();
 }
 
@@ -49,8 +51,6 @@ void MainWindow::on_verticalFlipButton_clicked()
 void MainWindow::on_fullFlipButton_clicked()
 {
     flip(tempPhoto, tempPhoto, -1);
-
-
     displayImageToLabel();
 }
 
