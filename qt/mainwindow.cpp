@@ -52,26 +52,11 @@ void MainWindow::on_executeButton_clicked()
         return;
     }
 
-    int flipCode = 2;
-
-    if (ui->fullFlipRadioButton->isChecked())
-        flipCode = -1; // Both flips
-    else if (ui->horizontalRadioButton->isChecked())
-        flipCode = 1; // Horizontal flip
-    else if (ui->verticalRadioButton->isChecked())
-        flipCode = 0; // Vertical flip
-
-    if(flipCode == 2)
-    {
-        ui->photoLabel->setText("Please select a flip type before trying to initiate the process.");
-        return;
-    }
-
-    processImages(flipCode);
+    processImages();
     ui->photoLabel->setText("Processing complete.");
 }
 
-void MainWindow::processImages(int flipCode)
+void MainWindow::processImages()
 {
     for (const auto& entry : fs::directory_iterator(sourceFolder.toStdString()))
     {

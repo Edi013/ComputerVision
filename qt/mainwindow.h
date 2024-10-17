@@ -39,6 +39,6 @@ private:
     Mat photo;
     Mat photoAdapted;
 
-    void processImages(int flipCode);
+    void processImages();
 };
 #endif // MAINWINDOW_H
