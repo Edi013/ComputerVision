@@ -82,3 +82,4 @@ Makefile
 # Backup and temporary files
 *~ 
 *.swp
+qt/images/T02.Dialog.avi

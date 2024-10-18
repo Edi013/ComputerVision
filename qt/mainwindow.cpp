@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     ui->executeButton->setDisabled(true);
+    ui->playVideoButton->setDisabled(true);
+    ui->saveVideoButton->setDisabled(true);
 }
 
 MainWindow::~MainWindow()
@@ -41,6 +43,8 @@ void MainWindow::on_selectInOutFoldersButton_clicked()
     }
 
     ui->executeButton->setDisabled(false);
+    ui->playVideoButton->setDisabled(false);
+    ui->saveVideoButton->setDisabled(false);
 }
 
 void MainWindow::on_executeButton_clicked()
@@ -61,10 +65,59 @@ void MainWindow::on_executeButton_clicked()
     showUserInfo("Processing completed in " + QString::number(finalTime) + " seconds.");
 }
 
+void MainWindow::on_playVideoButton_clicked(){
+    if (result.empty()) {
+        std::cerr << "No images to write!" << std::endl;
+        showUserInfo("No images to transform in a video.");
+        return;
+    }
+
+    showUserInfo("Playing video.");
+    double initialTime = (double)getTickCount();
+    for(int i=0; i<result.size(); i++){
+        displayImageToImageLabel(result[i]);
+        waitKey(3000);
+    }
+    double finalTime = ((double)getTickCount()-initialTime)/getTickFrequency();
+    showUserInfo("Video ended. It lasted "+ QString::number(finalTime) + " seconds.");
+}
+
+void MainWindow::on_saveVideoButton_clicked()
+{
+    if (result.empty()) {
+        std::cerr << "No images to write!" << std::endl;
+        showUserInfo("No images to transform in a video.");
+        return;
+    }else{
+        std::cerr<<"Input vector has " + std::to_string(result.size()) << " frames" << std::endl;
+    }
+
+    string fileName = "T02.Dialog.avi";
+    string outputPath = destinationFolder.toStdString() + "/" + fileName;
+
+    int aviCodec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
+    //int mp4Codec = cv::VideoWriter::fourcc('X', '2', '6', '4');
+
+    cv::Size frameSize(result[0].cols, result[0].rows);
+    cv::VideoWriter writer(outputPath, aviCodec, 0.5, frameSize, true);
+
+    if (!writer.isOpened()) {
+        std::cerr << "Could not open the video file for writing!" << std::endl;
+        return;
+    }
+
+    for (const cv::Mat& img : result) {
+        writer.write( img);
+    }
+
+    writer.release();
+    showUserInfo("Video saved successfully to " + destinationFolder + " as " + QString::fromStdString(fileName));
+}
+
+
+
 void MainWindow::readImages()
 {
-    //showUserInfo("Reading images from in folder.");
-    //waitKey(700);
     int contor = 0;
     for (const auto& entry : fs::directory_iterator(sourceFolder.toStdString()))
     {
@@ -72,6 +125,11 @@ void MainWindow::readImages()
         {
             string filePath = entry.path().string();
             Mat image = imread(filePath, cv::COLOR_RGB2BGR);
+
+            if (image.empty()) {
+                showUserInfo("Error: One image could not be loaded: " + QString::fromStdString(filePath) );
+                continue;
+            }
 
             if(contor==0){
                 scenery = image;
@@ -83,14 +141,11 @@ void MainWindow::readImages()
             }
 
             displayImageToImageLabel(image);
-            //showUserInfo("Selected images are displayed.");
-            //waitKey(300);
         }
         contor++;
     }
 
     showUserInfo("All images have been read.");
-    //waitKey(700);
 }
 
 void MainWindow::buildVideo()
@@ -122,16 +177,7 @@ void MainWindow::buildVideo()
     showUserInfo("Building video ended.");
 }
 
-void MainWindow::on_playVideoButton_clicked(){
-    showUserInfo("Playing video.");
-    double initialTime = (double)getTickCount();
-    for(int i=0; i<result.size(); i++){
-        displayImageToImageLabel(result[i]);
-        waitKey(3000);
-    }
-    double finalTime = ((double)getTickCount()-initialTime)/getTickFrequency();
-    showUserInfo("Video ended. It lasted "+ QString::number(finalTime) + " seconds.");
-}
+
 
 void MainWindow::displayImageToImageLabel(Mat tempPhoto){
     QImage img= QImage((uchar*) tempPhoto.data, tempPhoto.cols, tempPhoto.rows, tempPhoto.step, QImage::Format_RGB888);
@@ -141,11 +187,3 @@ void MainWindow::displayImageToImageLabel(Mat tempPhoto){
 void MainWindow::showUserInfo(QString message){
     ui->informationLabel->setText(message);
 }
-
-void MainWindow::on_saveVideoButton_clicked()
-{
-    //string fileName = entry.path().filename().string();
-    //string outputFilePath = destinationFolder.toStdString() + "/" + fileName;
-    //imwrite(outputFilePath, scenery, cv::COLOR_BGR2RGB);
-}
-
