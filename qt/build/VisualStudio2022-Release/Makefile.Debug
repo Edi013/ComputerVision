@@ -404,6 +404,23 @@ debug\moc_mainwindow.cpp: ..\..\mainwindow.h \
 		C:\Dev\OpenCV\opencv\build\include\opencv2\highgui.hpp \
 		C:\Dev\OpenCV\opencv\build\include\opencv2\imgcodecs.hpp \
 		C:\Dev\OpenCV\opencv\build\include\opencv2\videoio.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\imgproc\imgproc.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\imgproc.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\imgproc\segmentation.hpp \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\QFileDialog \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qfiledialog.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qdir.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qdirlisting.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qfiledevice.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qdatetime.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qcalendar.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qfile.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qfileinfo.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qtimezone.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qdialog.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\QRadioButton \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qradiobutton.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qabstractbutton.h \
 		debug\moc_predefs.h \
 		C:\Qt\6.8.0\msvc2022_64\bin\moc.exe
 	C:\Qt\6.8.0\msvc2022_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include E:/Projects/qt_proj/qt/build/VisualStudio2022-Release/debug/moc_predefs.h -IC:/Qt/6.8.0/msvc2022_64/mkspecs/win32-msvc -IE:/Projects/qt_proj/qt -IC:/Dev/OpenCV/opencv/build/include -IC:/Qt/6.8.0/msvc2022_64/include -IC:/Qt/6.8.0/msvc2022_64/include/QtWidgets -IC:/Qt/6.8.0/msvc2022_64/include/QtGui -IC:/Qt/6.8.0/msvc2022_64/include/QtCore -I. -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.22621.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.22621.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.22621.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.22621.0\\cppwinrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" ..\..\mainwindow.h -o debug\moc_mainwindow.cpp
@@ -659,6 +676,23 @@ debug\main.obj: ..\..\main.cpp ..\..\mainwindow.h \
 		C:\Dev\OpenCV\opencv\build\include\opencv2\highgui.hpp \
 		C:\Dev\OpenCV\opencv\build\include\opencv2\imgcodecs.hpp \
 		C:\Dev\OpenCV\opencv\build\include\opencv2\videoio.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\imgproc\imgproc.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\imgproc.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\imgproc\segmentation.hpp \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\QFileDialog \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qfiledialog.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qdir.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qdirlisting.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qfiledevice.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qdatetime.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qcalendar.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qfile.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qfileinfo.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qtimezone.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qdialog.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\QRadioButton \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qradiobutton.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qabstractbutton.h \
 		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\QApplication \
 		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qapplication.h
 
@@ -890,7 +924,101 @@ debug\mainwindow.obj: ..\..\mainwindow.cpp ..\..\mainwindow.h \
 		C:\Dev\OpenCV\opencv\build\include\opencv2\highgui.hpp \
 		C:\Dev\OpenCV\opencv\build\include\opencv2\imgcodecs.hpp \
 		C:\Dev\OpenCV\opencv\build\include\opencv2\videoio.hpp \
-		ui_mainwindow.h
+		C:\Dev\OpenCV\opencv\build\include\opencv2\imgproc\imgproc.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\imgproc.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\imgproc\segmentation.hpp \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\QFileDialog \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qfiledialog.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qdir.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qdirlisting.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qfiledevice.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qdatetime.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qcalendar.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qfile.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qfileinfo.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\qtimezone.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qdialog.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\QRadioButton \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qradiobutton.h \
+		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qabstractbutton.h \
+		ui_mainwindow.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\opencv.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\calib3d.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\features2d.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\miniflann.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\defines.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\config.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\core\affine.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\core\utils\logger.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\core\utils\logger.defines.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\core\utils\logtag.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\dnn.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\dnn\dnn.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\core\async.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\dnn\version.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\dnn\dict.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\dnn\layer.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\dnn\dnn.inl.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\dnn\utils\inference_engine.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\flann_base.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\general.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\matrix.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\params.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\any.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\saving.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\nn_index.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\result_set.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\all_indices.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\kdtree_index.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\dynamic_bitset.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\dist.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\heap.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\allocator.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\random.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\kdtree_single_index.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\kmeans_index.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\logger.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\composite_index.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\linear_index.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\hierarchical_clustering_index.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\lsh_index.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\lsh_table.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\autotuned_index.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\ground_truth.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\index_testing.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\timer.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\flann\sampling.h \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\ml.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\ml\ml.inl.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\objdetect.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\objdetect\aruco_detector.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\objdetect\aruco_dictionary.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\objdetect\aruco_board.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\objdetect\graphical_code_detector.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\objdetect\detection_based_tracker.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\objdetect\face.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\objdetect\charuco_detector.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\objdetect\barcode.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\photo.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching\warpers.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching\detail\warpers.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\core\cuda.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\core\cuda_types.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\core\cuda.inl.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching\detail\warpers_inl.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching\detail\matchers.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching\detail\motion_estimators.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching\detail\util.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching\detail\util_inl.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching\detail\camera.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching\detail\exposure_compensate.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching\detail\seam_finders.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\stitching\detail\blenders.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\video.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\video\tracking.hpp \
+		C:\Dev\OpenCV\opencv\build\include\opencv2\video\background_segm.hpp
 
 debug\moc_mainwindow.obj: debug\moc_mainwindow.cpp 
 

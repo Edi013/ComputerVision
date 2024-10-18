@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QRadioButton>
 #include <filesystem>
+#include <vector>
 
 using namespace std;
 using namespace cv;
@@ -28,17 +29,24 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_selectInAndOutFoldersButton_clicked();
+    void on_selectInOutFoldersButton_clicked();
     void on_executeButton_clicked();
+    void displayImageToImageLabel(Mat tempPhoto);
 
 private:
     Ui::MainWindow *ui;
     QString sourceFolder;
     QString destinationFolder;
 
-    Mat photo;
-    Mat photoAdapted;
 
-    void processImages();
+    std::vector<cv::Mat> lines;
+    Mat scenery;
+    Mat tempPhoto;
+    std::vector<cv::Mat> result;
+
+    void readImages();
+    void buildVideo();
+    void saveVideo();
+    void showUserInfo(QString message);
 };
 #endif // MAINWINDOW_H
