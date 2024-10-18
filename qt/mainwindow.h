@@ -47,6 +47,6 @@ private:
     void buildVideo();
     void showUserInfo(QString message);
     void displayImageToImageLabel(Mat tempPhoto);
-    void writeFrameToVideo(VideoWriter& videoWriter, Mat& sceneryTemp, Mat& tempRoiScenery, Mat& roiScenery, int i, int j, int roiX, int roiY, int roiWidth, int roiHeight);
+    void writeFrameToVideo(VideoWriter& videoWriter, Mat& sceneryTemp, Mat& tempRoiScenery, Mat& roiScenery, int i, double j, int roiX, int roiY, int roiWidth, int roiHeight);
 };
 #endif // MAINWINDOW_H

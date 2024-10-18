@@ -148,7 +148,6 @@ void MainWindow::readImages()
 void MainWindow::buildVideo()
 {
     displayImageToImageLabel(scenery);
-    showUserInfo("Building video started.");
 
     int leftRoiX = 90, leftRoiY = 0;
     int roiWidth = lines[0].cols, roiHeight = lines[0].rows;
@@ -162,13 +161,13 @@ void MainWindow::buildVideo()
     Mat sceneryTemp = scenery.clone();
     Mat roiSceneryLeft = sceneryTemp(cv::Rect(leftRoiX, leftRoiY, roiWidth, roiHeight));
     Mat roiSceneryRight = sceneryTemp(cv::Rect(rightRoiX, rightRoiY, roiWidth, roiHeight));
-    Mat tempRoiScenery = sceneryTemp(cv::Rect(leftRoiX, leftRoiY, roiWidth, roiHeight));
+    Mat tempRoiScenery;
 
     string fileName = "T02.Dialog.avi";
     string outputPath = destinationFolder.toStdString() + "/" + fileName;
     int aviCodec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
     cv::Size frameSize(sceneryTemp.cols, sceneryTemp.rows);
-    cv::VideoWriter writer(outputPath, aviCodec, 2, frameSize, true);
+    cv::VideoWriter writer(outputPath, aviCodec, 10, frameSize, true);
 
     if (!writer.isOpened()) {
         std::cerr << "Could not open the video file for writing!" << std::endl;
@@ -176,30 +175,29 @@ void MainWindow::buildVideo()
         return;
     }
 
-    int framesNoBlendEffect = 3;
     for(int i=0; i<lines.size(); i++){
         sceneryTemp = scenery.clone();
+
         if(i%2==0){
             tempRoiScenery = sceneryTemp(cv::Rect(leftRoiX, leftRoiY, roiWidth, roiHeight));
-            for(int j=0; j<framesNoBlendEffect; j+=1){
-                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryLeft, i, j, leftRoiX, leftRoiY, roiWidth, roiHeight);
+            for(int j=0; j<=10; j+=1){
+                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryLeft, i, j/10.0, leftRoiX, leftRoiY, roiWidth, roiHeight);
             }
-            for(int j=framesNoBlendEffect-1; j>=0; j-=1){
-                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryLeft, i, j, leftRoiX, leftRoiY, roiWidth, roiHeight);
+            for(int j=10; j>=1; j-=1){
+                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryLeft, i, j/10.0, leftRoiX, leftRoiY, roiWidth, roiHeight);
             }
+
         }else{
             tempRoiScenery = sceneryTemp(cv::Rect(rightRoiX, rightRoiY, roiWidth, roiHeight));
-            for(int j=0; j<framesNoBlendEffect; j+=1){
-                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryRight, i, j, rightRoiX, rightRoiY, roiWidth, roiHeight);
-
+            for(int j=0; j<=10; j+=1){
+                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryRight, i, j/10.0, rightRoiX, rightRoiY, roiWidth, roiHeight);
             }
-            for(int j=framesNoBlendEffect-1; j>=0; j-=1){
-                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryRight, i, j, rightRoiX, rightRoiY, roiWidth, roiHeight);
+            for(int j=10; j>=1; j-=1){
+                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryRight, i, j/10.0, rightRoiX, rightRoiY, roiWidth, roiHeight);
             }
         }
     }
     writer.release();
-    showUserInfo("Bulding video ended.Video saved successfully to " + destinationFolder + " as " + QString::fromStdString(fileName));
 }
 
 
@@ -213,8 +211,8 @@ void MainWindow::showUserInfo(QString message){
     ui->informationLabel->setText(message);
 }
 
-void MainWindow::writeFrameToVideo(VideoWriter& videoWriter, Mat& sceneryTemp, Mat& tempRoiScenery, Mat& roiScenery, int i, int j, int roiX, int roiY, int roiWidth, int roiHeight){
-    addWeighted(roiScenery, 1, lines[i], j,0., tempRoiScenery);
+void MainWindow::writeFrameToVideo(VideoWriter& videoWriter, Mat& sceneryTemp, Mat& tempRoiScenery, Mat& roiScenery, int i, double j, int roiX, int roiY, int roiWidth, int roiHeight){
+    addWeighted(roiScenery, 1, lines[i], j, 0., tempRoiScenery);
     tempRoiScenery.copyTo(sceneryTemp(cv::Rect(roiX, roiY, roiWidth, roiHeight)));
     videoWriter.write(sceneryTemp);
 }
