@@ -18,21 +18,21 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_selectInOutFoldersButton_clicked()
 {
-    sourceFolder = QFileDialog::getExistingDirectory(this, tr("Select Source Folder"), "");
-    if (sourceFolder.isEmpty())
-    {
-        showUserInfo("Source: " + sourceFolder + " was NOT selected.");
-    }else
-        showUserInfo("Source: " + sourceFolder + " was selected successfully.");
+    // sourceFolder = QFileDialog::getExistingDirectory(this, tr("Select Source Folder"), "");
+    // if (sourceFolder.isEmpty())
+    // {
+    //     showUserInfo("Source: " + sourceFolder + " was NOT selected.");
+    // }else
+    //     showUserInfo("Source: " + sourceFolder + " was selected successfully.");
 
-    destinationFolder = QFileDialog::getExistingDirectory(this, tr("Select Destination Folder"), "");
-    if (destinationFolder.isEmpty())
-    {
-        showUserInfo("Destination: " + destinationFolder + " was NOT selected.");
-    }else
-        showUserInfo("Destination: " + destinationFolder + " was selected successfully.");
-    // sourceFolder =QStringLiteral("E:\\Projects\\qt_proj\\qt\\images");
-    // destinationFolder = sourceFolder;
+    // destinationFolder = QFileDialog::getExistingDirectory(this, tr("Select Destination Folder"), "");
+    // if (destinationFolder.isEmpty())
+    // {
+    //     showUserInfo("Destination: " + destinationFolder + " was NOT selected.");
+    // }else
+    //     showUserInfo("Destination: " + destinationFolder + " was selected successfully.");
+    sourceFolder =QStringLiteral("E:\\Projects\\qt_proj\\qt\\images");
+    destinationFolder = sourceFolder;
 
     if(sourceFolder.isEmpty() || destinationFolder.isEmpty()){
         showUserInfo("Operation will be repeted. Select the source and destination again. For EXIT select any folders, than press x in the main window.");
@@ -51,17 +51,20 @@ void MainWindow::on_executeButton_clicked()
         return;
     }
 
+    showUserInfo("Processing started.");
+    double initialTime = (double)getTickCount();
+
     readImages();
     buildVideo();
-    saveVideo();
 
-    showUserInfo("Processing complete.");
+    double finalTime = ((double)getTickCount()-initialTime)/getTickFrequency();
+    showUserInfo("Processing completed in " + QString::number(finalTime) + " seconds.");
 }
 
 void MainWindow::readImages()
 {
-    showUserInfo("Reading images from in folder.");
-    waitKey(700);
+    //showUserInfo("Reading images from in folder.");
+    //waitKey(700);
     int contor = 0;
     for (const auto& entry : fs::directory_iterator(sourceFolder.toStdString()))
     {
@@ -80,30 +83,30 @@ void MainWindow::readImages()
             }
 
             displayImageToImageLabel(image);
-            showUserInfo("Selected images are displayed.");
-            waitKey(300);
+            //showUserInfo("Selected images are displayed.");
+            //waitKey(300);
         }
         contor++;
     }
 
     showUserInfo("All images have been read.");
-    waitKey(700);
+    //waitKey(700);
 }
 
 void MainWindow::buildVideo()
 {
     displayImageToImageLabel(scenery);
     showUserInfo("Building video started.");
-    waitKey(700);
 
     int leftRoiX = 90, leftRoiY = 0;
     int roiWidth = lines[0].cols, roiHeight = lines[0].rows;
     int rightRoiX = scenery.cols - leftRoiX - roiWidth, rightRoiY = 0;
     Mat roiScenery, sceneryTemp;
-    for(int i=0; i<=lines.size(); i++){
+    result.push_back(scenery.clone());
+    for(int i=0; i<lines.size(); i++){
         sceneryTemp = scenery.clone();
         displayImageToImageLabel(sceneryTemp);
-        waitKey(1000);
+        //waitKey(1000);
 
         if(i%2==0){
             roiScenery = sceneryTemp(cv::Rect(leftRoiX, leftRoiY, roiWidth, roiHeight));
@@ -114,20 +117,20 @@ void MainWindow::buildVideo()
             addWeighted(roiScenery, 0.7, lines[i], 0.9,0., roiScenery);
             roiScenery.copyTo(sceneryTemp(cv::Rect(rightRoiX, rightRoiY, roiWidth, roiHeight)));
         }
-        displayImageToImageLabel(sceneryTemp);
-        waitKey(3500);
+        result.push_back(sceneryTemp.clone());
     }
-    // hold it with blend effect for like 5 seconds
-
     showUserInfo("Building video ended.");
-    waitKey(700);
 }
 
-void MainWindow::saveVideo()
-{
-    //string fileName = entry.path().filename().string();
-    //string outputFilePath = destinationFolder.toStdString() + "/" + fileName;
-    //imwrite(outputFilePath, scenery, cv::COLOR_BGR2RGB);
+void MainWindow::on_playVideoButton_clicked(){
+    showUserInfo("Playing video.");
+    double initialTime = (double)getTickCount();
+    for(int i=0; i<result.size(); i++){
+        displayImageToImageLabel(result[i]);
+        waitKey(3000);
+    }
+    double finalTime = ((double)getTickCount()-initialTime)/getTickFrequency();
+    showUserInfo("Video ended. It lasted "+ QString::number(finalTime) + " seconds.");
 }
 
 void MainWindow::displayImageToImageLabel(Mat tempPhoto){
@@ -138,3 +141,11 @@ void MainWindow::displayImageToImageLabel(Mat tempPhoto){
 void MainWindow::showUserInfo(QString message){
     ui->informationLabel->setText(message);
 }
+
+void MainWindow::on_saveVideoButton_clicked()
+{
+    //string fileName = entry.path().filename().string();
+    //string outputFilePath = destinationFolder.toStdString() + "/" + fileName;
+    //imwrite(outputFilePath, scenery, cv::COLOR_BGR2RGB);
+}
+

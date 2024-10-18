@@ -31,22 +31,21 @@ public:
 private slots:
     void on_selectInOutFoldersButton_clicked();
     void on_executeButton_clicked();
-    void displayImageToImageLabel(Mat tempPhoto);
+    void on_playVideoButton_clicked();
+    void on_saveVideoButton_clicked();
 
 private:
     Ui::MainWindow *ui;
     QString sourceFolder;
     QString destinationFolder;
 
-
-    std::vector<cv::Mat> lines;
     Mat scenery;
-    Mat tempPhoto;
+    std::vector<cv::Mat> lines;
     std::vector<cv::Mat> result;
 
     void readImages();
     void buildVideo();
-    void saveVideo();
     void showUserInfo(QString message);
+    void displayImageToImageLabel(Mat tempPhoto);
 };
 #endif // MAINWINDOW_H
