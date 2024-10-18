@@ -31,8 +31,6 @@ public:
 private slots:
     void on_selectInOutFoldersButton_clicked();
     void on_executeButton_clicked();
-    void on_playVideoButton_clicked();
-    void on_saveVideoButton_clicked();
 
 private:
     Ui::MainWindow *ui;

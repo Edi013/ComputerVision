@@ -17,10 +17,10 @@
    <widget class="QLabel" name="photoLabel">
     <property name="geometry">
      <rect>
-      <x>122</x>
+      <x>162</x>
       <y>10</y>
-      <width>681</width>
-      <height>471</height>
+      <width>641</width>
+      <height>461</height>
      </rect>
     </property>
     <property name="text">
@@ -44,13 +44,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>330</y>
-      <width>91</width>
+      <y>320</y>
+      <width>141</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Build Video</string>
+     <string>Build AND Save Video</string>
     </property>
    </widget>
    <widget class="QLabel" name="informationLabel">
@@ -64,32 +64,6 @@
     </property>
     <property name="text">
      <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="playVideoButton">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>380</y>
-      <width>91</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Play Video</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="saveVideoButton">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>430</y>
-      <width>91</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Save Video</string>
     </property>
    </widget>
   </widget>
