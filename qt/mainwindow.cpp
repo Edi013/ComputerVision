@@ -9,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     ui->executeButton->setDisabled(true);
-    on_selectInOutFoldersButton_clicked();
 }
 
 MainWindow::~MainWindow()
@@ -19,21 +18,21 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_selectInOutFoldersButton_clicked()
 {
-    // sourceFolder = QFileDialog::getExistingDirectory(this, tr("Select Source Folder"), "");
-    // if (sourceFolder.isEmpty())
-    // {
-    //     showUserInfo("Source: " + sourceFolder + " was NOT selected.");
-    // }else
-    //     showUserInfo("Source: " + sourceFolder + " was selected successfully.");
+    sourceFolder = QFileDialog::getExistingDirectory(this, tr("Select Source Folder"), "");
+    if (sourceFolder.isEmpty())
+    {
+        showUserInfo("Source: " + sourceFolder + " was NOT selected.");
+    }else
+        showUserInfo("Source: " + sourceFolder + " was selected successfully.");
 
-    // destinationFolder = QFileDialog::getExistingDirectory(this, tr("Select Destination Folder"), "");
-    // if (destinationFolder.isEmpty())
-    // {
-    //     showUserInfo("Destination: " + destinationFolder + " was NOT selected.");
-    // }else
-    //     showUserInfo("Destination: " + destinationFolder + " was selected successfully.");
-    sourceFolder =QStringLiteral("E:\\Projects\\qt_proj\\qt\\images");
-    destinationFolder = sourceFolder;
+    destinationFolder = QFileDialog::getExistingDirectory(this, tr("Select Destination Folder"), "");
+    if (destinationFolder.isEmpty())
+    {
+        showUserInfo("Destination: " + destinationFolder + " was NOT selected.");
+    }else
+        showUserInfo("Destination: " + destinationFolder + " was selected successfully.");
+    // sourceFolder =QStringLiteral("E:\\Projects\\qt_proj\\qt\\images");
+    // destinationFolder = sourceFolder;
 
     if(sourceFolder.isEmpty() || destinationFolder.isEmpty()){
         showUserInfo("Operation will be repeted. Select the source and destination again. For EXIT select any folders, than press x in the main window.");
@@ -75,7 +74,9 @@ void MainWindow::readImages()
                 scenery = image;
             }
             else{
-                lines.push_back(image);
+                cv::Mat resizedImage;
+                cv::resize(image, resizedImage, cv::Size(), 0.80, 0.80, cv::INTER_LINEAR);
+                lines.push_back(resizedImage);
             }
 
             displayImageToImageLabel(image);
@@ -89,37 +90,34 @@ void MainWindow::readImages()
     waitKey(700);
 }
 
-
 void MainWindow::buildVideo()
 {
     displayImageToImageLabel(scenery);
     showUserInfo("Building video started.");
     waitKey(700);
 
-    cv::Mat resizedImage;
-    cv::resize(lines[0], resizedImage, cv::Size(), 0.77, 0.77, cv::INTER_LINEAR);  // Scaling by 0.77
-    lines[0] = resizedImage;
+    int leftRoiX = 90, leftRoiY = 0;
+    int roiWidth = lines[0].cols, roiHeight = lines[0].rows;
+    int rightRoiX = scenery.cols - leftRoiX - roiWidth, rightRoiY = 0;
+    Mat roiScenery, sceneryTemp;
+    for(int i=0; i<=lines.size(); i++){
+        sceneryTemp = scenery.clone();
+        displayImageToImageLabel(sceneryTemp);
+        waitKey(1000);
 
-    int roiX = 90;
-    int roiY = 0;
-    int leftRoiWidth = lines[0].cols;
-    int leftRoiHeight = lines[0].rows;
-
-
-
-    Mat leftPersonRoiScenery = scenery(cv::Rect(roiX, roiY, leftRoiWidth, leftRoiHeight));
-
-    //Mat rightPersonRoiScenery ;//scenery(Range(90, 90+lines[0].cols), Range(90, 90+lines[0].rows));;
-
-    addWeighted(leftPersonRoiScenery, 0.7, lines[0], 0.9,0., leftPersonRoiScenery);
-
-    Mat sceneryTemp = scenery.clone();
-    leftPersonRoiScenery.copyTo(sceneryTemp(cv::Rect(roiX, roiY, leftRoiWidth, leftRoiHeight)));
-
-    displayImageToImageLabel(sceneryTemp);
-    // take each line image and place it on top of scenery image
+        if(i%2==0){
+            roiScenery = sceneryTemp(cv::Rect(leftRoiX, leftRoiY, roiWidth, roiHeight));
+            addWeighted(roiScenery, 0.7, lines[i], 0.9,0., roiScenery);
+            roiScenery.copyTo(sceneryTemp(cv::Rect(leftRoiX, leftRoiY, roiWidth, roiHeight)));
+        }else{
+            roiScenery = sceneryTemp(cv::Rect(rightRoiX, rightRoiY, roiWidth, roiHeight));
+            addWeighted(roiScenery, 0.7, lines[i], 0.9,0., roiScenery);
+            roiScenery.copyTo(sceneryTemp(cv::Rect(rightRoiX, rightRoiY, roiWidth, roiHeight)));
+        }
+        displayImageToImageLabel(sceneryTemp);
+        waitKey(3500);
+    }
     // hold it with blend effect for like 5 seconds
-    // go to next one
 
     showUserInfo("Building video ended.");
     waitKey(700);
