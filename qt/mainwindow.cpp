@@ -58,8 +58,8 @@ void MainWindow::on_executeButton_clicked()
     showUserInfo("Processing started.");
     double initialTime = (double)getTickCount();
 
-    readImages();
-    buildVideo();
+     readImages();
+     buildVideo();
 
     double finalTime = ((double)getTickCount()-initialTime)/getTickFrequency();
     showUserInfo("Processing completed in " + QString::number(finalTime) + " seconds.");
@@ -96,7 +96,6 @@ void MainWindow::on_saveVideoButton_clicked()
     string outputPath = destinationFolder.toStdString() + "/" + fileName;
 
     int aviCodec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
-    //int mp4Codec = cv::VideoWriter::fourcc('X', '2', '6', '4');
 
     cv::Size frameSize(result[0].cols, result[0].rows);
     cv::VideoWriter writer(outputPath, aviCodec, 0.5, frameSize, true);
@@ -113,8 +112,6 @@ void MainWindow::on_saveVideoButton_clicked()
     writer.release();
     showUserInfo("Video saved successfully to " + destinationFolder + " as " + QString::fromStdString(fileName));
 }
-
-
 
 void MainWindow::readImages()
 {
@@ -156,25 +153,53 @@ void MainWindow::buildVideo()
     int leftRoiX = 90, leftRoiY = 0;
     int roiWidth = lines[0].cols, roiHeight = lines[0].rows;
     int rightRoiX = scenery.cols - leftRoiX - roiWidth, rightRoiY = 0;
-    Mat roiScenery, sceneryTemp;
-    result.push_back(scenery.clone());
+    if(scenery.cols < roiWidth || scenery.rows < roiHeight){
+        std::cerr << "ROI is bigger than the scenery!" << std::endl;
+        showUserInfo("ROI is bigger than the scenery!");
+        return;
+    }
+
+    Mat sceneryTemp = scenery.clone();
+    Mat roiSceneryLeft = sceneryTemp(cv::Rect(leftRoiX, leftRoiY, roiWidth, roiHeight));
+    Mat roiSceneryRight = sceneryTemp(cv::Rect(rightRoiX, rightRoiY, roiWidth, roiHeight));
+    Mat tempRoiScenery = sceneryTemp(cv::Rect(leftRoiX, leftRoiY, roiWidth, roiHeight));
+
+    string fileName = "T02.Dialog.avi";
+    string outputPath = destinationFolder.toStdString() + "/" + fileName;
+    int aviCodec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
+    cv::Size frameSize(sceneryTemp.cols, sceneryTemp.rows);
+    cv::VideoWriter writer(outputPath, aviCodec, 2, frameSize, true);
+
+    if (!writer.isOpened()) {
+        std::cerr << "Could not open the video file for writing!" << std::endl;
+        showUserInfo("Could not open the video file for writing!");
+        return;
+    }
+
+    int framesNoBlendEffect = 3;
     for(int i=0; i<lines.size(); i++){
         sceneryTemp = scenery.clone();
-        displayImageToImageLabel(sceneryTemp);
-        //waitKey(1000);
-
         if(i%2==0){
-            roiScenery = sceneryTemp(cv::Rect(leftRoiX, leftRoiY, roiWidth, roiHeight));
-            addWeighted(roiScenery, 0.7, lines[i], 0.9,0., roiScenery);
-            roiScenery.copyTo(sceneryTemp(cv::Rect(leftRoiX, leftRoiY, roiWidth, roiHeight)));
+            tempRoiScenery = sceneryTemp(cv::Rect(leftRoiX, leftRoiY, roiWidth, roiHeight));
+            for(int j=0; j<framesNoBlendEffect; j+=1){
+                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryLeft, i, j, leftRoiX, leftRoiY, roiWidth, roiHeight);
+            }
+            for(int j=framesNoBlendEffect-1; j>=0; j-=1){
+                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryLeft, i, j, leftRoiX, leftRoiY, roiWidth, roiHeight);
+            }
         }else{
-            roiScenery = sceneryTemp(cv::Rect(rightRoiX, rightRoiY, roiWidth, roiHeight));
-            addWeighted(roiScenery, 0.7, lines[i], 0.9,0., roiScenery);
-            roiScenery.copyTo(sceneryTemp(cv::Rect(rightRoiX, rightRoiY, roiWidth, roiHeight)));
+            tempRoiScenery = sceneryTemp(cv::Rect(rightRoiX, rightRoiY, roiWidth, roiHeight));
+            for(int j=0; j<framesNoBlendEffect; j+=1){
+                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryRight, i, j, rightRoiX, rightRoiY, roiWidth, roiHeight);
+
+            }
+            for(int j=framesNoBlendEffect-1; j>=0; j-=1){
+                writeFrameToVideo(writer, sceneryTemp, tempRoiScenery, roiSceneryRight, i, j, rightRoiX, rightRoiY, roiWidth, roiHeight);
+            }
         }
-        result.push_back(sceneryTemp.clone());
     }
-    showUserInfo("Building video ended.");
+    writer.release();
+    showUserInfo("Bulding video ended.Video saved successfully to " + destinationFolder + " as " + QString::fromStdString(fileName));
 }
 
 
@@ -186,4 +211,10 @@ void MainWindow::displayImageToImageLabel(Mat tempPhoto){
 
 void MainWindow::showUserInfo(QString message){
     ui->informationLabel->setText(message);
+}
+
+void MainWindow::writeFrameToVideo(VideoWriter& videoWriter, Mat& sceneryTemp, Mat& tempRoiScenery, Mat& roiScenery, int i, int j, int roiX, int roiY, int roiWidth, int roiHeight){
+    addWeighted(roiScenery, 1, lines[i], j,0., tempRoiScenery);
+    tempRoiScenery.copyTo(sceneryTemp(cv::Rect(roiX, roiY, roiWidth, roiHeight)));
+    videoWriter.write(sceneryTemp);
 }

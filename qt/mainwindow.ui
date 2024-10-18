@@ -104,7 +104,7 @@
    </property>
    <widget class="QMenu" name="menuImgApp">
     <property name="title">
-     <string>ImgApp</string>
+     <string>VideoCreationApp</string>
     </property>
    </widget>
    <addaction name="menuImgApp"/>
