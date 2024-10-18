@@ -115,7 +115,7 @@ void MainWindow::buildVideo()
     string outputPath = destinationFolder.toStdString() + "/" + fileName;
     int aviCodec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
     cv::Size frameSize(sceneryTemp.cols, sceneryTemp.rows);
-    cv::VideoWriter writer(outputPath, aviCodec, 10, frameSize, true);
+    cv::VideoWriter writer(outputPath, aviCodec, 5, frameSize, true);
 
     if (!writer.isOpened()) {
         std::cerr << "Could not open the video file for writing!" << std::endl;
