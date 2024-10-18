@@ -17,10 +17,10 @@
    <widget class="QLabel" name="photoLabel">
     <property name="geometry">
      <rect>
-      <x>142</x>
+      <x>122</x>
       <y>10</y>
-      <width>641</width>
-      <height>521</height>
+      <width>681</width>
+      <height>471</height>
      </rect>
     </property>
     <property name="text">
@@ -57,9 +57,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>385</y>
-      <width>121</width>
-      <height>151</height>
+      <y>495</y>
+      <width>791</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
