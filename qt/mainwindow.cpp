@@ -153,3 +153,17 @@ void MainWindow::on_textEdit_textChanged(const QString &value)
     updateText();
 }
 
+
+void MainWindow::on_textXSlider_valueChanged(int value)
+{
+    textPosX = value;
+    updateText();
+}
+
+
+void MainWindow::on_textYSlider_valueChanged(int value)
+{
+    textPosY = value;
+    updateText();
+}
+
