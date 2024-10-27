@@ -7,44 +7,50 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    textColor(Qt::black),
-    textSize(20),
-    textThickness(2),
-    textPosX(0),
-    textPosY(0)
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    textSize = 10;
+    textColor = Qt::black;
+    textPosX=0;
+    textPosY=0;
+    textSize = 20;
     displayTextSizeToLabel(textSize);
-    textThickness = 10;
+    textThickness = 2;
     displayTextThicknessToLabel(textThickness);
-    toggleButtonsAvailability(false);
-    ui->sizeSlider->setRange(1, 1000);
-    ui->thicknessSlider->setRange(1, 1000);
-}
+    changeUserInputValue("Sample Text");
 
+    toggleButtonsAvailability(false);
+    ui->sizeSlider->setRange(0, 200);
+    ui->sizeSlider->setValue(textSize);
+    ui->thicknessSlider->setRange(0, 25);
+    ui->thicknessSlider->setValue(textThickness);
+}
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+void MainWindow::changeUserInputValue(std::string value){
+    userText = QString::fromStdString(value);
+    ui->textEdit->setText(userText);
+}
+
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    if (ui->imageLabel->geometry().contains(event->pos())) {
-        QPoint imagePos = event->pos() - ui->imageLabel->pos(); // Relative position within QLabel
-        textPosX = imagePos.x();
-        textPosY = imagePos.y();
+    QPoint imagePos = event->pos() - ui->imageLabel->pos();
+    if (ui->imageLabel->geometry().contains(imagePos)) {
+        setTextPosition(imagePos.x(), imagePos.y());
         updateText();
     }
+    ui->modifiedPixmap;
 }
+
 
 void MainWindow::setTextPosition(int x, int y) {
     textPosX = x;
     textPosY = y;
-    updateText();
 }
 
 void MainWindow::updateText()
@@ -58,7 +64,7 @@ void MainWindow::updateTextAttributes()
     textSize = ui->sizeSlider->value();
     textThickness = ui->thicknessSlider->value();
 
-    modifiedPixmap = originalPixmap.copy();
+    modifiedPixmap = originalPixmap;
     QPainter painter(&modifiedPixmap);
     QPen pen(textColor, textThickness);
     QFont font("Arial", textSize);
@@ -67,7 +73,7 @@ void MainWindow::updateTextAttributes()
     painter.setFont(font);
     painter.drawText(textPosX, textPosY, userText);
 
-    ui->imageLabel->setPixmap(modifiedPixmap);
+    displayImageToImageLabel(modifiedPixmap);
 }
 
 void MainWindow::saveImage()
@@ -140,5 +146,11 @@ void MainWindow::on_thicknessSlider_valueChanged(int value)
 {
     textThickness = value;
     displayTextThicknessToLabel(value);
+}
+
+void MainWindow::on_textEdit_textChanged(const QString &value)
+{
+    userText = value;
+    updateText();
 }
 

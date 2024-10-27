@@ -37,6 +37,9 @@ private slots:
 
     void on_sizeSlider_valueChanged(int value);
 
+    void on_thicknessSlider_valueChanged(int value);
+
+    void on_textEdit_textChanged(const QString &arg1);
 protected:
     void mousePressEvent(QMouseEvent *event) override;
 
@@ -65,6 +68,7 @@ private:
     void toggleButtonsAvailability(bool value);
     void displayTextSizeToLabel(int value);
     void displayTextThicknessToLabel(int value);
+    void changeUserInputValue(std::string value);
 };
 
 #endif // MAINWINDOW_H

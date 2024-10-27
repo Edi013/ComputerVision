@@ -43,9 +43,9 @@
    <widget class="QSlider" name="sizeSlider">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>70</y>
-      <width>100</width>
+      <width>121</width>
       <height>30</height>
      </rect>
     </property>
@@ -56,9 +56,9 @@
    <widget class="QSlider" name="thicknessSlider">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>120</y>
-      <width>100</width>
+      <width>121</width>
       <height>30</height>
      </rect>
     </property>
