@@ -16,31 +16,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    imageLabel = new QLabel(this);
-    textEdit = new QLineEdit(this);
-    sizeSlider = new QSlider(Qt::Horizontal, this);
-    thicknessSlider = new QSlider(Qt::Horizontal, this);
-    colorButton = new QPushButton("Choose Color", this);
-    loadButton = new QPushButton("Load Image", this);
-    saveButton = new QPushButton("Save Image", this);
-
-    // Set slider ranges
-    sizeSlider->setRange(10, 100);
-    thicknessSlider->setRange(1, 10);
-
-    // Set layout (skipping detailed layout code for simplicity)
-
-    // // Connect signals to slots
-    // connect(loadButton, &QPushButton::clicked, this, &MainWindow::loadImage);
-    // connect(saveButton, &QPushButton::clicked, this, &MainWindow::saveImage);
-    // connect(textEdit, &QLineEdit::textChanged, this, &MainWindow::updateText);
-    // connect(sizeSlider, &QSlider::valueChanged, this, &MainWindow::updateTextAttributes);
-    // connect(thicknessSlider, &QSlider::valueChanged, this, &MainWindow::updateTextAttributes);
-    // connect(colorButton, &QPushButton::clicked, [=]() {
-    //     textColor = QColorDialog::getColor(Qt::black, this);
-    //     updateText();
-    // });
+    //ui->sizeSlider->setRange(10, 100);
+    //ui->thicknessSlider->setRange(1, 10);
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -55,7 +34,7 @@ void MainWindow::loadImage()
     if (!filePath.isEmpty()) {
         originalPixmap.load(filePath);
         modifiedPixmap = originalPixmap;
-        imageLabel->setPixmap(modifiedPixmap);
+        ui->imageLabel->setPixmap(modifiedPixmap, Qt::KeepAspectRatio);
     }
 }
 
@@ -68,18 +47,16 @@ void MainWindow::setTextPosition(int x, int y) {
 
 void MainWindow::updateText()
 {
-    userText = textEdit->text();
+    userText = ui->textEdit->text();
     updateTextAttributes();
 }
 
 void MainWindow::updateTextAttributes()
 {
-    // Update text size and thickness
-    textSize = sizeSlider->value();
-    textThickness = thicknessSlider->value();
+    textSize = ui->sizeSlider->value();
+    textThickness = ui->thicknessSlider->value();
 
-    // Render text on image
-    modifiedPixmap = originalPixmap; // Reset to original for re-rendering
+    modifiedPixmap = originalPixmap.copy();
     QPainter painter(&modifiedPixmap);
     QPen pen(textColor, textThickness);
     QFont font("Arial", textSize);
@@ -88,13 +65,13 @@ void MainWindow::updateTextAttributes()
     painter.setFont(font);
     painter.drawText(textPosX, textPosY, userText);
 
-    imageLabel->setPixmap(modifiedPixmap);
+    ui->imageLabel->setPixmap(modifiedPixmap);
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    if (imageLabel->geometry().contains(event->pos())) {
-        QPoint imagePos = event->pos() - imageLabel->pos(); // Relative position within QLabel
+    if (ui->imageLabel->geometry().contains(event->pos())) {
+        QPoint imagePos = event->pos() - ui->imageLabel->pos(); // Relative position within QLabel
         textPosX = imagePos.x();
         textPosY = imagePos.y();
         updateText();
