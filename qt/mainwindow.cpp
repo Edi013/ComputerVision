@@ -23,7 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     textPosX = 0;
     textPosY = 0;
-
+    ui->textXSlider->setRange(0,0);
+    ui->textYSlider->setRange(0,0);
     textColor = Qt::black;
     changeUserInputValue("Sample Text");
     toggleButtonsAvailability(false);
