@@ -33,6 +33,10 @@ private slots:
 
     void on_loadButton_clicked();
 
+    void on_colorButton_clicked();
+
+    void on_sizeSlider_valueChanged(int value);
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
 
@@ -40,6 +44,8 @@ private:
     Ui::MainWindow *ui;
 
     QLabel imageLabel;
+    QLabel textSizeLabel;
+    QLabel textThicknessLabel;
     QPixmap originalPixmap;
     QPixmap modifiedPixmap;
 
@@ -55,6 +61,10 @@ private:
     int textSize;
     int textThickness;
     int textPosX, textPosY;
+    void displayImageToImageLabel(QPixmap image);
+    void toggleButtonsAvailability(bool value);
+    void displayTextSizeToLabel(int value);
+    void displayTextThicknessToLabel(int value);
 };
 
 #endif // MAINWINDOW_H
