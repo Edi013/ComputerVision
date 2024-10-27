@@ -59,6 +59,7 @@ void MainWindow::on_executeButton_clicked()
 
     double finalTime = ((double)getTickCount()-initialTime)/getTickFrequency();
     showUserInfo("Processing completed in " + QString::number(finalTime) + " seconds.");
+    ui->executeButton->setDisabled(true);
 }
 
 void MainWindow::readImages()
