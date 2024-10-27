@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     textPosY = 0;
     ui->textXSlider->setRange(0,0);
     ui->textYSlider->setRange(0,0);
-    textColor = Qt::black;
+    textColor = Qt::white;
     changeUserInputValue("Sample Text");
     toggleButtonsAvailability(false);
 }
@@ -55,9 +55,20 @@ void MainWindow::changeUserInputValue(std::string value){
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    QPoint imagePos = event->pos() - ui->imageLabel->pos();
-    if (ui->imageLabel->geometry().contains(imagePos)) {
-        setTextPosition(imagePos.x(), imagePos.y());
+    // Calculate the position of the image label relative to the main window
+    QPoint labelTopLeft = ui->imageLabel->mapToGlobal(QPoint(0, 0));  // Use mapToGlobal to get the position in global coordinates
+
+    // Check if the click is within the bounds of the image label
+    if (event->globalPosition().x() >= labelTopLeft.x() &&
+        event->globalPosition().x() <= labelTopLeft.x() + ui->imageLabel->width() &&
+        event->globalPosition().y() >= labelTopLeft.y() &&
+        event->globalPosition().y() <= labelTopLeft.y() + ui->imageLabel->height())
+    {
+        // Calculate the local position of the click within the image label
+        QPoint localPos = ui->imageLabel->mapFromGlobal(event->globalPosition());
+
+        // Scale the local position by a factor of 2
+        setTextPosition(localPos.x() * 2, localPos.y() * 2);
         updateText();
     }
 }
