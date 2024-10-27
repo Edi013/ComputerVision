@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <opencv2/opencv.hpp>
 #include <QMainWindow>
 #include <QLabel>
 #include <QPixmap>
@@ -77,6 +78,8 @@ private:
 
     void displayTextToXLabel(int value);
     void displayTextToYLabel(int value);
+    cv::Mat QPixmapToCvMat(const QPixmap &pixmap) ;
+    QPixmap CvMatToQPixmap(const cv::Mat &mat) ;
 };
 
 #endif // MAINWINDOW_H

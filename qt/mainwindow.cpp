@@ -11,24 +11,30 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    textColor = Qt::black;
-    textPosX=0;
-    textPosY=0;
-    textSize = 20;
-    displayTextSizeToLabel(textSize);
-    textThickness = 2;
-    displayTextThicknessToLabel(textThickness);
-    changeUserInputValue("Sample Text");
-
-    toggleButtonsAvailability(false);
+    textSize = 32;
     ui->sizeSlider->setRange(0, 200);
     ui->sizeSlider->setValue(textSize);
+    displayTextSizeToLabel(textSize);
+
+    textThickness = 20;
     ui->thicknessSlider->setRange(0, 25);
     ui->thicknessSlider->setValue(textThickness);
-    ui->textXSlider->setRange(0, imageLabel.size().width());
-    ui->textYSlider->setRange(0, imageLabel.size().height());
-    displayTextToXLabel(imageLabel.size().width()/2);
-    displayTextToYLabel(imageLabel.size().height()/2);
+    displayTextThicknessToLabel(textThickness);
+
+
+    textPosX=imageLabel.size().width()/2;
+    ui->textXSlider->setRange(10, imageLabel.size().width()*2);
+    ui->textXSlider->setValue(textPosX);
+    displayTextToXLabel(textPosX);
+
+    textPosY=imageLabel.size().height()/2;
+    ui->textYSlider->setRange(10, imageLabel.size().height()*2);
+    ui->textYSlider->setValue(textPosY);
+    displayTextToYLabel(textPosY);
+
+    textColor = Qt::black;
+    changeUserInputValue("Sample Text");
+    toggleButtonsAvailability(false);
 }
 
 MainWindow::~MainWindow()
@@ -62,22 +68,47 @@ void MainWindow::updateText()
     updateTextAttributes();
 }
 
+// void MainWindow::updateTextAttributes()
+// {
+//     textSize = ui->sizeSlider->value();
+//     textThickness = ui->thicknessSlider->value();
+
+//     modifiedPixmap = originalPixmap;
+//     QPainter painter(&modifiedPixmap);
+//     QPen pen(textColor, textThickness);
+//     QFont font("Arial", textSize);
+
+//     painter.setPen(pen);
+//     painter.setFont(font);
+//     painter.drawText(textPosX, textPosY, userText);
+
+
+//     displayImageToImageLabel(modifiedPixmap);
+// }
 void MainWindow::updateTextAttributes()
 {
     textSize = ui->sizeSlider->value();
     textThickness = ui->thicknessSlider->value();
 
     modifiedPixmap = originalPixmap;
-    QPainter painter(&modifiedPixmap);
-    QPen pen(textColor, textThickness);
-    QFont font("Arial", textSize);
 
-    painter.setPen(pen);
-    painter.setFont(font);
-    painter.drawText(textPosX, textPosY, userText);
+    // Convert QPixmap to OpenCV Mat
+    cv::Mat matImage = QPixmapToCvMat(modifiedPixmap);
+
+    // Set color and font parameters
+    cv::Scalar cvTextColor(textColor.red(), textColor.green(), textColor.blue());
+    int fontFace = cv::FONT_HERSHEY_SIMPLEX;
+
+    // Use putText to add text to the image
+    cv::putText(matImage, userText.toStdString(), cv::Point(textPosX, textPosY),
+                fontFace, textSize / 20.0, cvTextColor, textThickness);
+
+    // Convert modified Mat back to QPixmap
+    modifiedPixmap = CvMatToQPixmap(matImage);
 
     displayImageToImageLabel(modifiedPixmap);
 }
+
 
 void MainWindow::saveImage()
 {
@@ -179,4 +210,14 @@ void MainWindow::displayTextToXLabel(int value){
 }
 void MainWindow::displayTextToYLabel(int value){
     ui->textYLabel->setText("Text Y: " + QString::number(value));
+}
+
+cv::Mat MainWindow::QPixmapToCvMat(const QPixmap &pixmap) {
+    QImage img = pixmap.toImage().convertToFormat(QImage::Format_RGB888);
+    return cv::Mat(img.height(), img.width(), CV_8UC3, const_cast<uchar*>(img.bits()), img.bytesPerLine()).clone();
+}
+
+QPixmap MainWindow::CvMatToQPixmap(const cv::Mat &mat) {
+    QImage img(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
+    return QPixmap::fromImage(img.rgbSwapped());
 }
