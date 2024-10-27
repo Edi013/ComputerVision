@@ -2,43 +2,55 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <QFileDialog>
+#include <QLabel>
+#include <QPixmap>
+#include <QSlider>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QColorDialog>
 
-using namespace std;
-using namespace cv;
-
-QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
 }
-QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
-    void on_openButton_clicked();
+    void loadImage();                // Slot to load an image from file
+    void updateText();               // Slot to update text display on image
+    void saveImage();                // Slot to save the modified image
 
-    void on_horizontalFlipButton_clicked();
+    void setTextPosition(int x, int y);   // Function to set text position
+    void updateTextAttributes();          // Update font size, thickness, and color
 
-    void on_verticalFlipButton_clicked();
-
-    void on_fullFlipButton_clicked();
-    void displayImageToLabel();
-
-    void on_saveImgButton_clicked();
+protected:
+    void mousePressEvent(QMouseEvent *event) override; // Capture mouse position for text placement
 
 private:
     Ui::MainWindow *ui;
-    Mat photo;
-    Mat tempPhoto;
+
+    QLabel *imageLabel;              // Label to display the image
+    QPixmap originalPixmap;          // Original image
+    QPixmap modifiedPixmap;          // Image with text overlay
+
+    QLineEdit *textEdit;             // Input for user text
+    QSlider *sizeSlider;             // Slider for text size
+    QSlider *thicknessSlider;        // Slider for text thickness
+    QPushButton *colorButton;        // Button to open color dialog
+    QPushButton *loadButton;         // Button to load an image
+    QPushButton *saveButton;         // Button to save the image
+
+    QColor textColor;                // Color for text
+    QString userText;                // Text to be drawn
+    int textSize;                    // Font size
+    int textThickness;               // Text thickness
+    int textPosX, textPosY;          // Position for text on the image
 };
+
 #endif // MAINWINDOW_H
