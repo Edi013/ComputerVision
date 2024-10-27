@@ -25,6 +25,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->sizeSlider->setValue(textSize);
     ui->thicknessSlider->setRange(0, 25);
     ui->thicknessSlider->setValue(textThickness);
+    ui->textXSlider->setRange(0, imageLabel.size().width());
+    ui->textYSlider->setRange(0, imageLabel.size().height());
+    displayTextToXLabel(imageLabel.size().width()/2);
+    displayTextToYLabel(imageLabel.size().height()/2);
 }
 
 MainWindow::~MainWindow()
@@ -138,12 +142,14 @@ void MainWindow::on_colorButton_clicked()
 void MainWindow::on_sizeSlider_valueChanged(int value)
 {
     textSize = value;
+    updateText();
     displayTextSizeToLabel(value);
 }
 
 void MainWindow::on_thicknessSlider_valueChanged(int value)
 {
     textThickness = value;
+    updateText();
     displayTextThicknessToLabel(value);
 }
 
@@ -153,17 +159,24 @@ void MainWindow::on_textEdit_textChanged(const QString &value)
     updateText();
 }
 
-
 void MainWindow::on_textXSlider_valueChanged(int value)
 {
     textPosX = value;
     updateText();
+    displayTextToXLabel(value);
 }
-
 
 void MainWindow::on_textYSlider_valueChanged(int value)
 {
     textPosY = value;
     updateText();
+    displayTextToYLabel(value);
 }
 
+void MainWindow::displayTextToXLabel(int value){
+    ui->textXLabel->setText("Text X: " + QString::number(value));
+
+}
+void MainWindow::displayTextToYLabel(int value){
+    ui->textYLabel->setText("Text Y: " + QString::number(value));
+}
