@@ -44,7 +44,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         setTextPosition(imagePos.x(), imagePos.y());
         updateText();
     }
-    ui->modifiedPixmap;
 }
 
 
