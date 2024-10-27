@@ -55,8 +55,8 @@ private:
     QLabel imageLabel;
     QLabel textSizeLabel;
     QLabel textThicknessLabel;
-    QPixmap originalPixmap;
-    QPixmap modifiedPixmap;
+    cv::Mat originalMat;
+    cv::Mat modifiedMat;
 
     QLineEdit textEdit;
     QSlider sizeSlider;
@@ -70,7 +70,7 @@ private:
     int textSize;
     int textThickness;
     int textPosX, textPosY;
-    void displayImageToImageLabel(QPixmap image);
+    void displayImageToImageLabel(const cv::Mat& matImage);
     void toggleButtonsAvailability(bool value);
     void displayTextSizeToLabel(int value);
     void displayTextThicknessToLabel(int value);
@@ -80,6 +80,7 @@ private:
     void displayTextToYLabel(int value);
     cv::Mat QPixmapToCvMat(const QPixmap &pixmap) ;
     QPixmap CvMatToQPixmap(const cv::Mat &mat) ;
+    void updateSlidersWithMatSize(const cv::Mat &mat);
 };
 
 #endif // MAINWINDOW_H
