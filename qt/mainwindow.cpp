@@ -35,24 +35,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::updateSlidersWithMatSize(const cv::Mat &mat) {
-    if (mat.empty()) return;
-
-    ui->textXSlider->setRange(10, mat.cols - 10); // Range from 10 to width - 10
-    ui->textXSlider->setValue(textPosX);
-    displayTextToXLabel(textPosX);
-
-    ui->textYSlider->setRange(10, mat.rows - 10); // Range from 10 to height - 10
-    ui->textYSlider->setValue(textPosY);
-    displayTextToYLabel(textPosY);
-}
-
-
-void MainWindow::changeUserInputValue(std::string value){
-    userText = QString::fromStdString(value);
-    ui->textEdit->setText(userText);
-}
-
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (ui->imageLabel->geometry().contains(event->pos())) {
@@ -69,10 +51,31 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         int progressiveX = static_cast<int>(pow(static_cast<double>(localPos.x()) / maxWidth, progressionFactor) * scaleX);
         int progressiveY = static_cast<int>(pow(static_cast<double>(localPos.y()) / maxHeight, progressionFactor) * scaleY);
 
-        std::cout<< "X and Y : " << progressiveX << " " << progressiveY;
         ui->textXSlider->setValue(progressiveX);
         ui->textYSlider->setValue(progressiveY);
     }
+}
+
+
+
+void MainWindow::saveImage() {
+    QString savePath = QFileDialog::getSaveFileName(this, "Save Image", "", "PNG Files (*.png)");
+    if (!savePath.isEmpty()) {
+        std::string filePath = savePath.toStdString();
+
+        cv::imwrite(filePath, modifiedMat);
+    }
+}
+
+void MainWindow::loadImage() {
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Open image"), ".", tr("Image FIles (*.png *.jpg *.jpeg *.bmp)"));
+    if (!filePath.isEmpty()) {
+        originalMat = cv::imread(filePath.toStdString());
+        modifiedMat = originalMat.clone();
+        updateSlidersWithMatSize(modifiedMat);
+        displayImageToImageLabel(modifiedMat);
+    }
+    toggleButtonsAvailability(true);
 }
 
 void MainWindow::setTextPosition(int x, int y) {
@@ -90,70 +93,34 @@ void MainWindow::updateTextAttributes() {
     textSize = ui->sizeSlider->value();
     textThickness = ui->thicknessSlider->value();
 
-    modifiedMat = originalMat.clone();  // Reset to the original each time
-    cv::Scalar cvTextColor(textColor.red(), textColor.green(), textColor.blue());
+    modifiedMat = originalMat.clone();
+    cv::Scalar cvTextColor(textColor.blue(), textColor.green(), textColor.red());
     int fontFace = cv::FONT_HERSHEY_SIMPLEX;
 
-    // Use putText to add text
     cv::putText(modifiedMat, userText.toStdString(), cv::Point(textPosX, textPosY),
                 fontFace, textSize / 20.0, cvTextColor, textThickness);
 
     displayImageToImageLabel(modifiedMat);
 }
 
+void MainWindow::updateSlidersWithMatSize(const cv::Mat &mat) {
+    if (mat.empty()) return;
 
-void MainWindow::saveImage() {
-    QString savePath = QFileDialog::getSaveFileName(this, "Save Image", "", "PNG Files (*.png);;JPEG Files (*.jpg)");
-    if (!savePath.isEmpty()) {
-        std::string filePath = savePath.toStdString();
+    ui->textXSlider->setRange(10, mat.cols - 10); // Range from 10 to width - 10
+    ui->textXSlider->setValue(textPosX);
+    displayTextToXLabel(textPosX);
 
-        // Determine file format based on extension
-        std::string extension = filePath.substr(filePath.find_last_of(".") + 1);
-        std::vector<int> compression_params;
+    ui->textYSlider->setRange(10, mat.rows - 10); // Range from 10 to height - 10
+    ui->textYSlider->setValue(textPosY);
+    displayTextToYLabel(textPosY);
+}
 
-        // Set compression parameters if needed (optional)
-        if (extension == "jpg" || extension == "jpeg") {
-            compression_params.push_back(cv::IMWRITE_JPEG_QUALITY);
-            compression_params.push_back(95); // Set JPEG quality (0-100)
-        } else if (extension == "png") {
-            compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
-            compression_params.push_back(3); // Set PNG compression level (0-9)
-        }
-
-        // Save modifiedMat directly as an image file
-        cv::imwrite(filePath, modifiedMat, compression_params);
-    }
+void MainWindow::changeUserInputValue(std::string value){
+    userText = QString::fromStdString(value);
+    ui->textEdit->setText(userText);
 }
 
 
-void MainWindow::loadImage() {
-    QString filePath = QFileDialog::getOpenFileName(this, tr("Open image"), ".", tr("Image FIles (*.png *.jpg *.jpeg *.bmp)"));
-    if (!filePath.isEmpty()) {
-        originalMat = cv::imread(filePath.toStdString());  // Load image as cv::Mat
-        modifiedMat = originalMat.clone();
-        updateSlidersWithMatSize(modifiedMat);
-        displayImageToImageLabel(modifiedMat);
-    }
-    toggleButtonsAvailability(true);
-}
-
-void MainWindow::displayImageToImageLabel(const cv::Mat& matImage) {
-    ui->imageLabel->setPixmap(CvMatToQPixmap(matImage).scaled(ui->imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-}
-
-void MainWindow::toggleButtonsAvailability(bool value) {
-    ui->saveButton->setDisabled(!value);
-    ui->colorButton->setDisabled(!value);
-    ui->textEdit->setDisabled(!value);
-}
-
-void MainWindow::displayTextSizeToLabel(int value){
-    ui->textSizeLabel->setText(QString("Text Size: %1").arg(value));
-}
-
-void MainWindow::displayTextThicknessToLabel(int value){
-    ui->textThicknessLabel->setText(QString("Text Size: %1").arg(value));
-}
 
 void MainWindow::on_saveButton_clicked()
 {
@@ -174,6 +141,8 @@ void MainWindow::on_colorButton_clicked()
         updateText();
     }
 }
+
+
 
 void MainWindow::on_sizeSlider_valueChanged(int value)
 {
@@ -209,20 +178,33 @@ void MainWindow::on_textYSlider_valueChanged(int value)
     displayTextToYLabel(value);
 }
 
+
+
+void MainWindow::displayTextSizeToLabel(int value){
+    ui->textSizeLabel->setText(QString("Text Size: %1").arg(value));
+}
+
+void MainWindow::displayTextThicknessToLabel(int value){
+    ui->textThicknessLabel->setText(QString("Text Size: %1").arg(value));
+}
+
 void MainWindow::displayTextToXLabel(int value){
     ui->textXLabel->setText("Text X: " + QString::number(value));
 
 }
+
 void MainWindow::displayTextToYLabel(int value){
     ui->textYLabel->setText("Text Y: " + QString::number(value));
 }
 
-cv::Mat MainWindow::QPixmapToCvMat(const QPixmap &pixmap) {
-    QImage img = pixmap.toImage().convertToFormat(QImage::Format_RGB888);
-    return cv::Mat(img.height(), img.width(), CV_8UC3, const_cast<uchar*>(img.bits()), img.bytesPerLine()).clone();
+void MainWindow::displayImageToImageLabel(const cv::Mat& matImage) {
+    ui->imageLabel->setPixmap(CvMatToQPixmap(matImage).scaled(ui->imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
-QPixmap MainWindow::CvMatToQPixmap(const cv::Mat &mat) {
-    QImage img(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
-    return QPixmap::fromImage(img.rgbSwapped());
+
+
+void MainWindow::toggleButtonsAvailability(bool value) {
+    ui->saveButton->setDisabled(!value);
+    ui->colorButton->setDisabled(!value);
+    ui->textEdit->setDisabled(!value);
 }
