@@ -58,7 +58,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 }
 
 
-
 void MainWindow::saveImage() {
     QString dateTimeNow = QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm-ss");
     std::string fileName = "T03.Image_" + dateTimeNow.toStdString() + ".png";
@@ -130,7 +129,6 @@ void MainWindow::toggleButtonsAvailability(bool value) {
 }
 
 
-
 void MainWindow::on_saveButton_clicked()
 {
     saveImage();
@@ -150,7 +148,6 @@ void MainWindow::on_colorButton_clicked()
         updateText();
     }
 }
-
 
 
 void MainWindow::on_sizeSlider_valueChanged(int value)
@@ -186,7 +183,6 @@ void MainWindow::on_textYSlider_valueChanged(int value)
     updateText();
     displayTextToYLabel(value);
 }
-
 
 
 void MainWindow::displayTextSizeToLabel(int value){
