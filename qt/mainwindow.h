@@ -61,6 +61,8 @@ private:
     QLineEdit textEdit;
     QSlider sizeSlider;
     QSlider thicknessSlider;
+    QSlider textXSlider;
+    QSlider textYSlider;
     QPushButton colorButton;
     QPushButton loadButton;
     QPushButton saveButton;

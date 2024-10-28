@@ -55,21 +55,23 @@ void MainWindow::changeUserInputValue(std::string value){
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    // Calculate the position of the image label relative to the main window
-    QPoint labelTopLeft = ui->imageLabel->mapToGlobal(QPoint(0, 0));  // Use mapToGlobal to get the position in global coordinates
+    if (ui->imageLabel->geometry().contains(event->pos())) {
 
-    // Check if the click is within the bounds of the image label
-    if (event->globalPosition().x() >= labelTopLeft.x() &&
-        event->globalPosition().x() <= labelTopLeft.x() + ui->imageLabel->width() &&
-        event->globalPosition().y() >= labelTopLeft.y() &&
-        event->globalPosition().y() <= labelTopLeft.y() + ui->imageLabel->height())
-    {
-        // Calculate the local position of the click within the image label
-        QPoint localPos = ui->imageLabel->mapFromGlobal(event->globalPosition());
+        QPoint localPos = ui->imageLabel->mapFromParent(event->pos());
 
-        // Scale the local position by a factor of 2
-        setTextPosition(localPos.x() * 2, localPos.y() * 2);
-        updateText();
+        int maxWidth = ui->imageLabel->width();
+        int maxHeight = ui->imageLabel->height();
+
+        int scaleX = 1000;
+        int scaleY = 1000;
+        double progressionFactor = 1.5;
+
+        int progressiveX = static_cast<int>(pow(static_cast<double>(localPos.x()) / maxWidth, progressionFactor) * scaleX);
+        int progressiveY = static_cast<int>(pow(static_cast<double>(localPos.y()) / maxHeight, progressionFactor) * scaleY);
+
+        std::cout<< "X and Y : " << progressiveX << " " << progressiveY;
+        ui->textXSlider->setValue(progressiveX);
+        ui->textYSlider->setValue(progressiveY);
     }
 }
 
