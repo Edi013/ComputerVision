@@ -80,7 +80,6 @@ private:
 
     void displayTextToXLabel(int value);
     void displayTextToYLabel(int value);
-    cv::Mat QPixmapToCvMat(const QPixmap &pixmap) ;
     QPixmap CvMatToQPixmap(const cv::Mat &mat) ;
     void updateSlidersWithMatSize(const cv::Mat &mat);
 };

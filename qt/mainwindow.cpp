@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -59,10 +60,12 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 
 
 void MainWindow::saveImage() {
-    QString savePath = QFileDialog::getSaveFileName(this, "Save Image", "", "PNG Files (*.png)");
+    QString dateTimeNow = QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm-ss");
+    std::string fileName = "T03.Image_" + dateTimeNow.toStdString() + ".png";
+    QString savePath = QFileDialog::getSaveFileName(this, "Save Image", QString::fromStdString(fileName), "PNG Files (*.png)");
+
     if (!savePath.isEmpty()) {
         std::string filePath = savePath.toStdString();
-
         cv::imwrite(filePath, modifiedMat);
     }
 }
@@ -118,6 +121,12 @@ void MainWindow::updateSlidersWithMatSize(const cv::Mat &mat) {
 void MainWindow::changeUserInputValue(std::string value){
     userText = QString::fromStdString(value);
     ui->textEdit->setText(userText);
+}
+
+void MainWindow::toggleButtonsAvailability(bool value) {
+    ui->saveButton->setDisabled(!value);
+    ui->colorButton->setDisabled(!value);
+    ui->textEdit->setDisabled(!value);
 }
 
 
@@ -201,10 +210,8 @@ void MainWindow::displayImageToImageLabel(const cv::Mat& matImage) {
     ui->imageLabel->setPixmap(CvMatToQPixmap(matImage).scaled(ui->imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
-
-
-void MainWindow::toggleButtonsAvailability(bool value) {
-    ui->saveButton->setDisabled(!value);
-    ui->colorButton->setDisabled(!value);
-    ui->textEdit->setDisabled(!value);
+QPixmap MainWindow::CvMatToQPixmap(const cv::Mat &mat) {
+    QImage img(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
+    return QPixmap::fromImage(img.rgbSwapped());
 }
+
