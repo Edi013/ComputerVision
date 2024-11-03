@@ -34,6 +34,7 @@ private:
     void replaceBackgroundWithImage(const cv::Mat &bgImage);
     void displayImageToImageLabel(const cv::Mat &matImage);
     void toggleButtonsAvailability(bool value);
+    int findBackgroundThreshold(const cv::Mat& hist);
 };
 
 #endif // MAINWINDOW_H

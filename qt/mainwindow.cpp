@@ -4,6 +4,7 @@
 #include <QColorDialog>
 #include <QMouseEvent>
 #include <QDateTime>
+#include <opencv2/imgproc.hpp> // For histogram and threshold functions
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -30,7 +31,7 @@ void MainWindow::loadImage() {
 }
 
 void MainWindow::saveImage() {
-    QString savePath = QFileDialog::getSaveFileName(this, "Save Image", "", "PNG Files (*.png)");
+    QString savePath = QFileDialog::getSaveFileName(this, "Save Image", "T04.Schimbare-fundal", "PNG Files (*.png)");
     if (!savePath.isEmpty()) {
         cv::imwrite(savePath.toStdString(), modifiedMat);
     }
@@ -41,7 +42,7 @@ void MainWindow::on_loadButton_clicked() {
 }
 
 void MainWindow::on_saveButton_clicked() {
-    saveImage();
+    saveImage();  // Use the custom saveImage method here
 }
 
 void MainWindow::on_colorButton_clicked() {
@@ -60,55 +61,6 @@ void MainWindow::on_imageButton_clicked() {
     }
 }
 
-void MainWindow::replaceBackgroundWithColor(const cv::Scalar &color) {
-    if (originalMat.empty()) return;
-
-    // Split the image into R, G, and B channels
-    std::vector<cv::Mat> channels;
-    cv::split(originalMat, channels);
-
-    // Calculate histograms for each channel
-    cv::Mat histR, histG, histB;
-    int histSize = 256;  // Number of bins
-    float range[] = {0, 256};  // The range for intensity values
-    const float *histRange = {range};
-    cv::calcHist(&channels[2], 1, 0, cv::Mat(), histR, 1, &histSize, &histRange);  // Red
-    cv::calcHist(&channels[1], 1, 0, cv::Mat(), histG, 1, &histSize, &histRange);  // Green
-    cv::calcHist(&channels[0], 1, 0, cv::Mat(), histB, 1, &histSize, &histRange);  // Blue
-
-    // Define thresholds based on histogram peaks
-    int lowThresh = 0;
-    int highThresh = 100;  // You can dynamically adjust based on histogram data for a more adaptive approach
-
-    // Create a mask based on color range derived from histograms
-    cv::Mat mask;
-    cv::inRange(originalMat, cv::Scalar(lowThresh, lowThresh, lowThresh),
-                cv::Scalar(highThresh, highThresh, highThresh), mask);
-
-    // Replace the background with the selected color
-    modifiedMat = originalMat.clone();
-    modifiedMat.setTo(color, mask);
-    displayImageToImageLabel(modifiedMat);
-}
-
-void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
-    if (originalMat.empty() || bgImage.empty()) return;
-
-    cv::Mat resizedBg;
-    cv::resize(bgImage, resizedBg, originalMat.size());
-
-    // Use the same histogram-based mask to blend with the background image
-    cv::Mat mask;
-    int lowThresh = 0;
-    int highThresh = 100;
-    cv::inRange(originalMat, cv::Scalar(lowThresh, lowThresh, lowThresh),
-                cv::Scalar(highThresh, highThresh, highThresh), mask);
-
-    modifiedMat = originalMat.clone();
-    resizedBg.copyTo(modifiedMat, mask);
-    displayImageToImageLabel(modifiedMat);
-}
-
 void MainWindow::displayImageToImageLabel(const cv::Mat &matImage) {
     QImage img(matImage.data, matImage.cols, matImage.rows, matImage.step, QImage::Format_RGB888);
     ui->imageLabel->setPixmap(QPixmap::fromImage(img.rgbSwapped()).scaled(ui->imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -118,4 +70,52 @@ void MainWindow::toggleButtonsAvailability(bool value) {
     ui->saveButton->setEnabled(value);
     ui->colorButton->setEnabled(value);
     ui->imageButton->setEnabled(value);
+}
+
+void MainWindow::replaceBackgroundWithColor(const cv::Scalar &color) {
+    if (originalMat.empty()) return;
+
+    // Convert the image to HSV color space
+    cv::Mat hsvImage;
+    cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
+
+    // Create a mask for white areas in the image
+    cv::Mat mask;
+    cv::inRange(hsvImage, cv::Scalar(0, 0, 200), cv::Scalar(180, 20, 255), mask); // Adjust HSV range for white
+
+    // Expand mask to cover more background area
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(15, 15));
+    cv::dilate(mask, mask, kernel);
+
+    // Set the background color in the modified image
+    modifiedMat = originalMat.clone();
+    modifiedMat.setTo(color, mask); // Apply the color to the areas identified by the mask
+
+    displayImageToImageLabel(modifiedMat);
+}
+
+void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
+    if (originalMat.empty() || bgImage.empty()) return;
+
+    // Convert the image to HSV color space
+    cv::Mat hsvImage;
+    cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
+
+    // Create a mask for white areas in the image
+    cv::Mat mask;
+    cv::inRange(hsvImage, cv::Scalar(0, 0, 200), cv::Scalar(180, 20, 255), mask); // Adjust HSV range for white
+
+    // Expand mask to cover more background area
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(15, 15));
+    cv::dilate(mask, mask, kernel);
+
+    // Resize the background image to match the original size
+    cv::Mat resizedBg;
+    cv::resize(bgImage, resizedBg, originalMat.size());
+
+    // Replace the background in the modified image
+    modifiedMat = originalMat.clone();
+    resizedBg.copyTo(modifiedMat, mask); // Use the mask to overlay the background image
+
+    displayImageToImageLabel(modifiedMat);
 }
