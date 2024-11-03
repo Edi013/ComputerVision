@@ -4,7 +4,7 @@
 #include <QColorDialog>
 #include <QMouseEvent>
 #include <QDateTime>
-#include <opencv2/imgproc.hpp> // For histogram and threshold functions
+#include <opencv2/imgproc.hpp>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -42,7 +42,7 @@ void MainWindow::on_loadButton_clicked() {
 }
 
 void MainWindow::on_saveButton_clicked() {
-    saveImage();  // Use the custom saveImage method here
+    saveImage();
 }
 
 void MainWindow::on_colorButton_clicked() {
@@ -79,35 +79,52 @@ void MainWindow::replaceBackgroundWithColor(const cv::Scalar &color) {
     cv::Mat hsvImage;
     cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
 
-    // Create a mask for white areas in the image
+    // Create a mask for bright regions
     cv::Mat mask;
-    cv::inRange(hsvImage, cv::Scalar(0, 0, 200), cv::Scalar(180, 20, 255), mask); // Adjust HSV range for white
+    cv::inRange(hsvImage, cv::Scalar(0, 0, 200), cv::Scalar(180, 50, 255), mask);
 
-    // Expand mask to cover more background area
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(15, 15));
-    cv::dilate(mask, mask, kernel);
+    // // Morphological operation to close small holes
+    // cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));
+    // cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
+
+    // Find contours
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+    // Create a new mask to isolate the area of interest (the cat)
+    cv::Mat finalMask = cv::Mat::zeros(mask.size(), CV_8UC1);
+
+    // Filter and draw relevant contours to the final mask
+    for (const auto& contour : contours) {
+        double area = cv::contourArea(contour);
+        if (area > 500) { // Adjust based on your image
+            cv::drawContours(finalMask, std::vector<std::vector<cv::Point>>{contour}, -1, cv::Scalar(255), -1);
+        }
+    }
 
     // Set the background color in the modified image
     modifiedMat = originalMat.clone();
-    modifiedMat.setTo(color, mask); // Apply the color to the areas identified by the mask
 
+    modifiedMat.setTo(color, finalMask); // Apply the color to the identified areas
+    displayMask(finalMask);
+    // Display the updated image
     displayImageToImageLabel(modifiedMat);
 }
+
+
 
 void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
     if (originalMat.empty() || bgImage.empty()) return;
 
-    // Convert the image to HSV color space
     cv::Mat hsvImage;
     cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
 
-    // Create a mask for white areas in the image
     cv::Mat mask;
-    cv::inRange(hsvImage, cv::Scalar(0, 0, 200), cv::Scalar(180, 20, 255), mask); // Adjust HSV range for white
+    cv::inRange(hsvImage, cv::Scalar(0, 0, 200), cv::Scalar(180, 50, 255), mask);
 
-    // Expand mask to cover more background area
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(15, 15));
-    cv::dilate(mask, mask, kernel);
+    // Optionally apply morphological operations to improve the mask
+    //cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));
+    //cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel); // Close small holes in the mask
 
     // Resize the background image to match the original size
     cv::Mat resizedBg;
@@ -118,4 +135,17 @@ void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
     resizedBg.copyTo(modifiedMat, mask); // Use the mask to overlay the background image
 
     displayImageToImageLabel(modifiedMat);
+}
+
+void MainWindow::displayMask(const cv::Mat &mask) {
+    // Convert the mask to an 8-bit single channel image for visualization
+    cv::Mat displayMask;
+    mask.convertTo(displayMask, CV_8U); // Convert to 8-bit format (0-255)
+
+    // Scale the values to be visible in the range [0, 255]
+    displayMask = displayMask * 255;
+
+    // Display the mask
+    cv::imshow("Mask", displayMask);
+    cv::waitKey(0); // Wait indefinitely for a key press
 }

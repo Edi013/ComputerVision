@@ -35,6 +35,7 @@ private:
     void displayImageToImageLabel(const cv::Mat &matImage);
     void toggleButtonsAvailability(bool value);
     int findBackgroundThreshold(const cv::Mat& hist);
+    void displayMask(const cv::Mat &mask);
 };
 
 #endif // MAINWINDOW_H
