@@ -75,39 +75,38 @@ void MainWindow::toggleButtonsAvailability(bool value) {
 void MainWindow::replaceBackgroundWithColor(const cv::Scalar &color) {
     if (originalMat.empty()) return;
 
-    // Convert the image to HSV color space
+    // Step 1: Convert the image to HSV color space
     cv::Mat hsvImage;
     cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
 
-    // Create a mask for bright regions
+    // Step 2: Create a mask for bright, low-saturation regions (background)
     cv::Mat mask;
-    cv::inRange(hsvImage, cv::Scalar(0, 0, 200), cv::Scalar(180, 50, 255), mask);
+    cv::inRange(hsvImage, cv::Scalar(0, 0, 220), cv::Scalar(180, 40, 255), mask);
 
-    // // Morphological operation to close small holes
-    // cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));
-    // cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
-
-    // Find contours
+    // Step 4: Find contours
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-    // Create a new mask to isolate the area of interest (the cat)
+    // Step 5: Create a refined mask to isolate the background areas
     cv::Mat finalMask = cv::Mat::zeros(mask.size(), CV_8UC1);
-
-    // Filter and draw relevant contours to the final mask
     for (const auto& contour : contours) {
         double area = cv::contourArea(contour);
-        if (area > 500) { // Adjust based on your image
+        cv::Rect boundingRect = cv::boundingRect(contour);
+
+        // Filter based on contour area and aspect ratio to avoid small objects or misclassified regions
+        if (area > 1000 && boundingRect.width / static_cast<double>(boundingRect.height) < 5) { // adjust as needed
             cv::drawContours(finalMask, std::vector<std::vector<cv::Point>>{contour}, -1, cv::Scalar(255), -1);
         }
     }
 
-    // Set the background color in the modified image
+    // Step 6: Set the background color in the modified image based on refined mask
     modifiedMat = originalMat.clone();
+    modifiedMat.setTo(color, finalMask);  // Apply the color to areas marked as background
 
-    modifiedMat.setTo(color, finalMask); // Apply the color to the identified areas
+    // Optional: Display the mask for debugging
     displayMask(finalMask);
-    // Display the updated image
+
+    // Step 7: Display the updated image
     displayImageToImageLabel(modifiedMat);
 }
 
@@ -116,36 +115,52 @@ void MainWindow::replaceBackgroundWithColor(const cv::Scalar &color) {
 void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
     if (originalMat.empty() || bgImage.empty()) return;
 
-    cv::Mat hsvImage;
-    cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
-
-    cv::Mat mask;
-    cv::inRange(hsvImage, cv::Scalar(0, 0, 200), cv::Scalar(180, 50, 255), mask);
-
-    // Optionally apply morphological operations to improve the mask
-    //cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));
-    //cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel); // Close small holes in the mask
-
-    // Resize the background image to match the original size
+    // Step 1: Resize the background image to match the original image's dimensions
     cv::Mat resizedBg;
     cv::resize(bgImage, resizedBg, originalMat.size());
 
-    // Replace the background in the modified image
-    modifiedMat = originalMat.clone();
-    resizedBg.copyTo(modifiedMat, mask); // Use the mask to overlay the background image
+    // Step 2: Convert the image to HSV color space
+    cv::Mat hsvImage;
+    cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
 
+    // Step 3: Create a mask for bright, low-saturation regions (background)
+    cv::Mat mask;
+    cv::inRange(hsvImage, cv::Scalar(0, 0, 220), cv::Scalar(180, 40, 255), mask);
+
+    // Step 5: Find contours
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+    // Step 6: Create a refined mask to isolate the background areas
+    cv::Mat finalMask = cv::Mat::zeros(mask.size(), CV_8UC1);
+    for (const auto& contour : contours) {
+        double area = cv::contourArea(contour);
+        cv::Rect boundingRect = cv::boundingRect(contour);
+
+        // Filter based on contour area and aspect ratio to avoid small objects or misclassified regions
+        if (area > 1000 && boundingRect.width / static_cast<double>(boundingRect.height) < 5) { // adjust as needed
+            cv::drawContours(finalMask, std::vector<std::vector<cv::Point>>{contour}, -1, cv::Scalar(255), -1);
+        }
+    }
+
+    // Step 7: Replace background with the resized background image
+    modifiedMat = originalMat.clone();
+    resizedBg.copyTo(modifiedMat, finalMask);  // Overlay the background image onto areas marked as background
+
+    // Optional: Display the mask for debugging
+    displayMask(finalMask);
+
+    // Step 8: Display the updated image
     displayImageToImageLabel(modifiedMat);
 }
 
-void MainWindow::displayMask(const cv::Mat &mask) {
-    // Convert the mask to an 8-bit single channel image for visualization
-    cv::Mat displayMask;
-    mask.convertTo(displayMask, CV_8U); // Convert to 8-bit format (0-255)
 
-    // Scale the values to be visible in the range [0, 255]
+void MainWindow::displayMask(const cv::Mat &mask) {
+    cv::Mat displayMask;
+    mask.convertTo(displayMask, CV_8U);
+
     displayMask = displayMask * 255;
 
-    // Display the mask
     cv::imshow("Mask", displayMask);
-    cv::waitKey(0); // Wait indefinitely for a key press
+    cv::waitKey(3000);
 }
