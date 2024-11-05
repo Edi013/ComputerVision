@@ -60,7 +60,6 @@ void MainWindow::saveImage() {
     QString savePath = QFileDialog::getSaveFileName(this, "Save Image", baseFileName, "PNG Files (*.png)");
 
     if (!savePath.isEmpty()) {
-        // Save the image with the selected path
         cv::imwrite(savePath.toStdString(), modifiedMat);
     }
 }
