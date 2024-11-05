@@ -22,6 +22,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->valueLow->setRange(0, 255);
     ui->valueHigh->setRange(0, 255);
+
+    ui->labelValueHigh->setText(QString::number(valueHigh));
+    ui->labelValueLow->setText(QString::number(valueLow));
+    ui->labelSaturationHigh->setText(QString::number(saturationHigh));
+    ui->labelSaturationLow->setText(QString::number(saturationLow));
+    ui->labelHueHigh->setText(QString::number(hueHigh));
+    ui->labelHueLow->setText(QString::number(hueLow));
 }
 
 MainWindow::~MainWindow()
@@ -40,8 +47,14 @@ void MainWindow::loadImage() {
 }
 
 void MainWindow::saveImage() {
-    QString savePath = QFileDialog::getSaveFileName(this, "Save Image", "T04.Schimbare-fundal", "PNG Files (*.png)");
+    QString dateTimeString = QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm");
+
+    QString baseFileName = QString("T04_Schimbare_fundal_"+dateTimeString);
+
+    QString savePath = QFileDialog::getSaveFileName(this, "Save Image", baseFileName, "PNG Files (*.png)");
+
     if (!savePath.isEmpty()) {
+        // Save the image with the selected path
         cv::imwrite(savePath.toStdString(), modifiedMat);
     }
 }
@@ -86,38 +99,28 @@ void MainWindow::replaceBackgroundWithColor(const cv::Scalar &color) {
     lastBackgroundColorUsed = color;
     lastUsed = colorMethodIdentifier;
 
-    // Step 1: Convert the image to HSV color space
     cv::Mat hsvImage;
     cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
 
-    // Step 2: Create a mask for the specified HSV ranges
     cv::Mat mask;
     cv::inRange(hsvImage, cv::Scalar(hueLow, saturationLow, valueLow), cv::Scalar(hueHigh, saturationHigh, valueHigh), mask);
 
-    // Step 4: Find contours
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-    // Step 5: Create a refined mask to isolate the background areas
     cv::Mat finalMask = cv::Mat::zeros(mask.size(), CV_8UC1);
     for (const auto& contour : contours) {
         double area = cv::contourArea(contour);
         cv::Rect boundingRect = cv::boundingRect(contour);
 
-        // Filter based on contour area and aspect ratio to avoid small objects or misclassified regions
-        if (area > 1000 && boundingRect.width / static_cast<double>(boundingRect.height) < 5) { // adjust as needed
+        if (area > 1000 && boundingRect.width / static_cast<double>(boundingRect.height) < 5) {
             cv::drawContours(finalMask, std::vector<std::vector<cv::Point>>{contour}, -1, cv::Scalar(255), -1);
         }
     }
 
-    // Step 6: Set the background color in the modified image based on refined mask
     modifiedMat = originalMat.clone();
-    modifiedMat.setTo(color, finalMask);  // Apply the color to areas marked as background
+    modifiedMat.setTo(color, finalMask);
 
-    // Optional: Display the mask for debugging
-    displayMask(finalMask);
-
-    // Step 7: Display the updated image
     displayImageToImageLabel(modifiedMat);
 }
 
@@ -126,45 +129,33 @@ void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
     lastBackgroundImageUsed = bgImage;
     lastUsed = imageMethodIdentifier;
 
-    // Step 1: Resize the background image to match the original image's dimensions
     cv::Mat resizedBg;
     cv::resize(bgImage, resizedBg, originalMat.size());
 
-    // Step 2: Convert the image to HSV color space
     cv::Mat hsvImage;
     cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
 
-    // Step 3: Create a mask for the specified HSV ranges
     cv::Mat mask;
     cv::inRange(hsvImage, cv::Scalar(hueLow, saturationLow, valueLow), cv::Scalar(hueHigh, saturationHigh, valueHigh), mask);
 
-    // Step 5: Find contours
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-    // Step 6: Create a refined mask to isolate the background areas
     cv::Mat finalMask = cv::Mat::zeros(mask.size(), CV_8UC1);
     for (const auto& contour : contours) {
         double area = cv::contourArea(contour);
         cv::Rect boundingRect = cv::boundingRect(contour);
 
-        // Filter based on contour area and aspect ratio to avoid small objects or misclassified regions
-        if (area > 1000 && boundingRect.width / static_cast<double>(boundingRect.height) < 5) { // adjust as needed
+        if (area > 1000 && boundingRect.width / static_cast<double>(boundingRect.height) < 5) {
             cv::drawContours(finalMask, std::vector<std::vector<cv::Point>>{contour}, -1, cv::Scalar(255), -1);
         }
     }
 
-    // Step 7: Replace background with the resized background image
     modifiedMat = originalMat.clone();
-    resizedBg.copyTo(modifiedMat, finalMask);  // Overlay the background image onto areas marked as background
+    resizedBg.copyTo(modifiedMat, finalMask);
 
-    // Optional: Display the mask for debugging
-    displayMask(finalMask);
-
-    // Step 8: Display the updated image
     displayImageToImageLabel(modifiedMat);
 }
-
 
 void MainWindow::displayMask(const cv::Mat &mask) {
     cv::Mat displayMask;
@@ -175,7 +166,6 @@ void MainWindow::displayMask(const cv::Mat &mask) {
     cv::imshow("Mask", displayMask);
     cv::waitKey(3000);
 }
-
 
 void MainWindow::lastMethodUsed(){
     if(lastUsed == noneIdentifier)
@@ -189,36 +179,42 @@ void MainWindow::lastMethodUsed(){
 void MainWindow::on_hueLow_valueChanged(int value)
 {
     hueLow = value;
+    ui->labelHueLow->setText(QString::number(hueLow));
     lastMethodUsed();
 }
 
 void MainWindow::on_hueHigh_valueChanged(int value)
 {
     hueHigh = value;
+    ui->labelHueHigh->setText(QString::number(hueHigh));
     lastMethodUsed();
 }
 
 void MainWindow::on_saturationLow_valueChanged(int value)
 {
     saturationLow = value;
+    ui->labelSaturationLow->setText(QString::number(saturationLow));
     lastMethodUsed();
 }
 
 void MainWindow::on_saturationHigh_valueChanged(int value)
 {
     saturationHigh = value;
+    ui->labelSaturationHigh->setText(QString::number(saturationHigh));
     lastMethodUsed();
 }
 
 void MainWindow::on_valueLow_valueChanged(int value)
 {
     valueLow = value;
+    ui->labelValueLow->setText(QString::number(valueLow));
     lastMethodUsed();
 }
 
 void MainWindow::on_valueHigh_valueChanged(int value)
 {
     valueHigh = value;
+    ui->labelValueHigh->setText(QString::number(valueHigh));
     lastMethodUsed();
 }
 
