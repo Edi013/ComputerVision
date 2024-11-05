@@ -15,13 +15,19 @@ MainWindow::MainWindow(QWidget *parent) :
     toggleButtonsAvailability(false);
 
     ui->hueLow->setRange(0, 255);
+    ui->hueLow->setValue(hueLow);
     ui->hueHigh->setRange(0, 180);
+    ui->hueHigh->setValue(hueHigh);
 
     ui->saturationLow->setRange(0, 255);
+    ui->saturationLow->setValue(saturationLow);
     ui->saturationHigh->setRange(0, 255);
+    ui->saturationHigh->setValue(saturationHigh);
 
     ui->valueLow->setRange(0, 255);
+    ui->valueLow->setValue(valueLow);
     ui->valueHigh->setRange(0, 255);
+    ui->valueHigh->setValue(valueHigh);
 
     ui->labelValueHigh->setText(QString::number(valueHigh));
     ui->labelValueLow->setText(QString::number(valueLow));
