@@ -83,14 +83,16 @@ void MainWindow::toggleButtonsAvailability(bool value) {
 
 void MainWindow::replaceBackgroundWithColor(const cv::Scalar &color) {
     if (originalMat.empty()) return;
+    lastBackgroundColorUsed = color;
+    lastUsed = colorMethodIdentifier;
 
     // Step 1: Convert the image to HSV color space
     cv::Mat hsvImage;
     cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
 
-    // Step 2: Create a mask for bright, low-saturation regions (background)
+    // Step 2: Create a mask for the specified HSV ranges
     cv::Mat mask;
-    cv::inRange(hsvImage, cv::Scalar(0, 0, 220), cv::Scalar(180, 40, 255), mask);
+    cv::inRange(hsvImage, cv::Scalar(hueLow, saturationLow, valueLow), cv::Scalar(hueHigh, saturationHigh, valueHigh), mask);
 
     // Step 4: Find contours
     std::vector<std::vector<cv::Point>> contours;
@@ -119,10 +121,10 @@ void MainWindow::replaceBackgroundWithColor(const cv::Scalar &color) {
     displayImageToImageLabel(modifiedMat);
 }
 
-
-
 void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
     if (originalMat.empty() || bgImage.empty()) return;
+    lastBackgroundImageUsed = bgImage;
+    lastUsed = imageMethodIdentifier;
 
     // Step 1: Resize the background image to match the original image's dimensions
     cv::Mat resizedBg;
@@ -132,9 +134,9 @@ void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
     cv::Mat hsvImage;
     cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
 
-    // Step 3: Create a mask for bright, low-saturation regions (background)
+    // Step 3: Create a mask for the specified HSV ranges
     cv::Mat mask;
-    cv::inRange(hsvImage, cv::Scalar(0, 0, 220), cv::Scalar(180, 40, 255), mask);
+    cv::inRange(hsvImage, cv::Scalar(hueLow, saturationLow, valueLow), cv::Scalar(hueHigh, saturationHigh, valueHigh), mask);
 
     // Step 5: Find contours
     std::vector<std::vector<cv::Point>> contours;
@@ -175,34 +177,48 @@ void MainWindow::displayMask(const cv::Mat &mask) {
 }
 
 
+void MainWindow::lastMethodUsed(){
+    if(lastUsed == noneIdentifier)
+        return;
+    else if(lastUsed == colorMethodIdentifier)
+        replaceBackgroundWithColor(lastBackgroundColorUsed);
+    else if(lastUsed == imageMethodIdentifier)
+        replaceBackgroundWithImage(lastBackgroundImageUsed);
+}
 
 void MainWindow::on_hueLow_valueChanged(int value)
 {
     hueLow = value;
+    lastMethodUsed();
 }
 
 void MainWindow::on_hueHigh_valueChanged(int value)
 {
     hueHigh = value;
+    lastMethodUsed();
 }
 
 void MainWindow::on_saturationLow_valueChanged(int value)
 {
     saturationLow = value;
+    lastMethodUsed();
 }
 
 void MainWindow::on_saturationHigh_valueChanged(int value)
 {
     saturationHigh = value;
+    lastMethodUsed();
 }
 
 void MainWindow::on_valueLow_valueChanged(int value)
 {
     valueLow = value;
+    lastMethodUsed();
 }
 
 void MainWindow::on_valueHigh_valueChanged(int value)
 {
     valueHigh = value;
+    lastMethodUsed();
 }
 

@@ -45,7 +45,13 @@ private:
     int saturationHigh = 40;
     int valueLow = 200;
     int valueHigh = 255;
-    std::string lastUsed = "none";
+
+    std::string noneIdentifier = "none";
+    std::string colorMethodIdentifier = "color";
+    std::string imageMethodIdentifier = "image";
+    std::string lastUsed = noneIdentifier;
+    cv::Scalar lastBackgroundColorUsed;
+    cv::Mat lastBackgroundImageUsed;
 
     void replaceBackgroundWithColor(const cv::Scalar &color);
     void replaceBackgroundWithImage(const cv::Mat &bgImage);
@@ -54,6 +60,7 @@ private:
     int findBackgroundThreshold(const cv::Mat& hist);
     void displayMask(const cv::Mat &mask);
     void updateBackgroundReplacement();
+    void lastMethodUsed();
 };
 
 #endif // MAINWINDOW_H
