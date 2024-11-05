@@ -13,6 +13,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->imageLabel->setScaledContents(true);
     toggleButtonsAvailability(false);
+
+    ui->hueLow->setRange(0, 255);
+    ui->hueHigh->setRange(0, 180);
+
+    ui->saturationLow->setRange(0, 255);
+    ui->saturationHigh->setRange(0, 255);
+
+    ui->valueLow->setRange(0, 255);
+    ui->valueHigh->setRange(0, 255);
 }
 
 MainWindow::~MainWindow()
@@ -164,3 +173,36 @@ void MainWindow::displayMask(const cv::Mat &mask) {
     cv::imshow("Mask", displayMask);
     cv::waitKey(3000);
 }
+
+
+
+void MainWindow::on_hueLow_valueChanged(int value)
+{
+    hueLow = value;
+}
+
+void MainWindow::on_hueHigh_valueChanged(int value)
+{
+    hueHigh = value;
+}
+
+void MainWindow::on_saturationLow_valueChanged(int value)
+{
+    saturationLow = value;
+}
+
+void MainWindow::on_saturationHigh_valueChanged(int value)
+{
+    saturationHigh = value;
+}
+
+void MainWindow::on_valueLow_valueChanged(int value)
+{
+    valueLow = value;
+}
+
+void MainWindow::on_valueHigh_valueChanged(int value)
+{
+    valueHigh = value;
+}
+
