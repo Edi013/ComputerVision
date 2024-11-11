@@ -58,6 +58,7 @@ void MainWindow::loadImage() {
     ui->xSliderROI->setRange(0, originalMat.cols-roiSize);
     ui->ySliderROI->setRange(0, originalMat.rows-roiSize);
     ui->roiSizeSlider->setRange(0, originalMat.cols > originalMat.rows ? originalMat.rows : originalMat.cols);
+    drawSquare();
 }
 
 void MainWindow::saveImage() {
@@ -112,11 +113,11 @@ void MainWindow::replaceBackgroundWithColor(const cv::Scalar &color) {
     lastBackgroundColorUsed = color;
     lastUsed = colorMethodIdentifier;
 
-    cv::Mat hsvImage;
-    cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
+    cv::Mat hsvROI;
+    cv::cvtColor(roi, hsvROI, cv::COLOR_BGR2HSV);
 
     cv::Mat mask;
-    cv::inRange(hsvImage, cv::Scalar(hueLow, saturationLow, valueLow), cv::Scalar(hueHigh, saturationHigh, valueHigh), mask);
+    cv::inRange(hsvROI, cv::Scalar(hueLow, saturationLow, valueLow), cv::Scalar(hueHigh, saturationHigh, valueHigh), mask);
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
@@ -132,7 +133,12 @@ void MainWindow::replaceBackgroundWithColor(const cv::Scalar &color) {
     }
 
     modifiedMat = originalMat.clone();
-    modifiedMat.setTo(color, finalMask);
+    modifiedMat.setTo(color, modifiedMat);
+
+    modifiedRoi = roi;
+    modifiedRoi.setTo(color,finalMask);
+
+    modifiedRoi.copyTo(modifiedMat(cv::Rect(ui->xSliderROI->value(), ui->ySliderROI->value(), roi.cols, roi.rows)));
 
     displayImageToImageLabel(modifiedMat);
 }
@@ -237,6 +243,8 @@ void MainWindow::drawSquare(){
     cv::Point bottomRight(startX+roiSize, startY + roiSize);
 
     cv::rectangle(modifiedMat, topLeft, bottomRight, cv::Scalar(0, 255, 0), 2);
+    cv::Rect roiShape(topLeft, bottomRight);
+    roi = modifiedMat(roiShape);
 }
 
 void MainWindow::onSliderChange() {

@@ -59,6 +59,7 @@ private:
     cv::Scalar lastBackgroundColorUsed;
     cv::Mat lastBackgroundImageUsed;
     cv::Mat roi;
+    cv::Mat modifiedRoi;
 
 
     void replaceBackgroundWithColor(const cv::Scalar &color);
