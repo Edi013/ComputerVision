@@ -51,20 +51,21 @@ void MainWindow::loadImage() {
     if (!filePath.isEmpty()) {
         originalMat = cv::imread(filePath.toStdString());
         modifiedMat = originalMat.clone();
+
+        ui->xSliderROI->setRange(0, originalMat.cols-roiSize);
+        ui->ySliderROI->setRange(0, originalMat.rows-roiSize);
+        ui->roiSizeSlider->setRange(0, originalMat.cols > originalMat.rows ? originalMat.rows : originalMat.cols);
+        drawSquare();
+
         displayImageToImageLabel(modifiedMat);
         toggleButtonsAvailability(true);
     }
-
-    ui->xSliderROI->setRange(0, originalMat.cols-roiSize);
-    ui->ySliderROI->setRange(0, originalMat.rows-roiSize);
-    ui->roiSizeSlider->setRange(0, originalMat.cols > originalMat.rows ? originalMat.rows : originalMat.cols);
-    drawSquare();
 }
 
 void MainWindow::saveImage() {
     QString dateTimeString = QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm");
 
-    QString baseFileName = QString("T04_Schimbare_fundal_"+dateTimeString);
+    QString baseFileName = QString("T05_Selectare_Roi_Modificare_fundal"+dateTimeString);
 
     QString savePath = QFileDialog::getSaveFileName(this, "Save Image", baseFileName, "PNG Files (*.png)");
 
@@ -150,9 +151,6 @@ void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
 
     cv::Mat resizedBg;
     cv::resize(bgImage, resizedBg, originalMat.size());
-
-    // cv::Mat hsvImage;
-    // cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
 
     cv::Mat hsvROI;
     cv::cvtColor(roi, hsvROI, cv::COLOR_BGR2HSV);
@@ -267,7 +265,6 @@ void MainWindow::onSliderChange() {
 void MainWindow::on_xSliderROI_valueChanged(int value)
 {
     onSliderChange();
-
 }
 
 void MainWindow::on_ySliderROI_valueChanged(int value)
