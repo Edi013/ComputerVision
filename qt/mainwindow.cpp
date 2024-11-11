@@ -35,6 +35,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->labelSaturationLow->setText(QString::number(saturationLow));
     ui->labelHueHigh->setText(QString::number(hueHigh));
     ui->labelHueLow->setText(QString::number(hueLow));
+
+    ui->xSliderROI->setValue(0);
+    ui->ySliderROI->setValue(0);
+    ui->roiSizeSlider->setValue(0);
 }
 
 MainWindow::~MainWindow()
@@ -50,6 +54,10 @@ void MainWindow::loadImage() {
         displayImageToImageLabel(modifiedMat);
         toggleButtonsAvailability(true);
     }
+
+    ui->xSliderROI->setRange(0, originalMat.cols-roiSize);
+    ui->ySliderROI->setRange(0, originalMat.rows-roiSize);
+    ui->roiSizeSlider->setRange(0, originalMat.cols > originalMat.rows ? originalMat.rows : originalMat.cols);
 }
 
 void MainWindow::saveImage() {
@@ -221,5 +229,41 @@ void MainWindow::on_valueHigh_valueChanged(int value)
     valueHigh = value;
     ui->labelValueHigh->setText(QString::number(valueHigh));
     lastMethodUsed();
+}
+
+void MainWindow::drawSquare(){
+    int startX = ui->xSliderROI->value(), startY = ui->ySliderROI->value();
+    cv::Point topLeft(startX, startY);
+    cv::Point bottomRight(startX+roiSize, startY + roiSize);
+
+    cv::rectangle(modifiedMat, topLeft, bottomRight, cv::Scalar(0, 255, 0), 2);
+}
+
+void MainWindow::onSliderChange() {
+    modifiedMat = originalMat.clone();
+    drawSquare();
+
+    displayImageToImageLabel(modifiedMat);
+}
+
+void MainWindow::on_xSliderROI_valueChanged(int value)
+{
+    onSliderChange();
+
+}
+
+void MainWindow::on_ySliderROI_valueChanged(int value)
+{
+    onSliderChange();
+}
+
+void MainWindow::on_roiSizeSlider_valueChanged(int value)
+{
+    roiSize = value;
+    ui->xSliderROI->setRange(0, originalMat.cols-roiSize);
+    ui->ySliderROI->setRange(0, originalMat.rows-roiSize);
+    ui->xSliderROI->setValue(0);
+    ui->ySliderROI->setValue(0);
+    onSliderChange();
 }
 

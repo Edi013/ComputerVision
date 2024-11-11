@@ -34,6 +34,11 @@ private slots:
     void on_valueLow_valueChanged(int value);
 
     void on_valueHigh_valueChanged(int value);
+    void on_xSliderROI_valueChanged(int value);
+
+    void on_ySliderROI_valueChanged(int value);
+
+    void on_roiSizeSlider_valueChanged(int value);
 
 private:
     Ui::MainWindow *ui;
@@ -45,6 +50,7 @@ private:
     int saturationHigh = 40;
     int valueLow = 200;
     int valueHigh = 255;
+    int roiSize=400;
 
     std::string noneIdentifier = "none";
     std::string colorMethodIdentifier = "color";
@@ -52,6 +58,8 @@ private:
     std::string lastUsed = noneIdentifier;
     cv::Scalar lastBackgroundColorUsed;
     cv::Mat lastBackgroundImageUsed;
+    cv::Mat roi;
+
 
     void replaceBackgroundWithColor(const cv::Scalar &color);
     void replaceBackgroundWithImage(const cv::Mat &bgImage);
@@ -61,6 +69,8 @@ private:
     void displayMask(const cv::Mat &mask);
     void updateBackgroundReplacement();
     void lastMethodUsed();
+    void drawSquare();
+    void onSliderChange();
 };
 
 #endif // MAINWINDOW_H
