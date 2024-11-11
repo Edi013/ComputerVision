@@ -175,14 +175,14 @@ void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
 
     modifiedMat = originalMat.clone();
     resizedBg.copyTo(modifiedMat);
-    cv::Mat modifiedMatRoiCropped = lastBackgroundImageUsed(cv::Rect(ui->xSliderROI->value(), ui->ySliderROI->value(), roi.cols, roi.rows)).clone();
+    cv::Mat bgImgRoiCropped = modifiedMat(cv::Rect(ui->xSliderROI->value(), ui->ySliderROI->value(), roi.cols, roi.rows)).clone();
 
     modifiedRoi = roi.clone();
-    cv::Scalar blackColor = cv::Scalar(0,0,0);
-    modifiedRoi.setTo(blackColor,finalMask);
+    cv::bitwise_and(modifiedRoi, bgImgRoiCropped, modifiedRoi, finalMask);
 
-    cv::bitwise_or(modifiedRoi, modifiedMatRoiCropped, modifiedRoi);
     modifiedRoi.copyTo(modifiedMat(cv::Rect(ui->xSliderROI->value(), ui->ySliderROI->value(), roi.cols, roi.rows)));
+    cv::imshow("Matrix Display", finalMask);
+
     displayImageToImageLabel(modifiedMat);
 }
 
