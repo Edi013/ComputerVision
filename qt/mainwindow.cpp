@@ -135,7 +135,7 @@ void MainWindow::replaceBackgroundWithColor(const cv::Scalar &color) {
     modifiedMat = originalMat.clone();
     modifiedMat.setTo(color, modifiedMat);
 
-    modifiedRoi = roi;
+    modifiedRoi = roi.clone();
     modifiedRoi.setTo(color,finalMask);
 
     modifiedRoi.copyTo(modifiedMat(cv::Rect(ui->xSliderROI->value(), ui->ySliderROI->value(), roi.cols, roi.rows)));
@@ -151,11 +151,14 @@ void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
     cv::Mat resizedBg;
     cv::resize(bgImage, resizedBg, originalMat.size());
 
-    cv::Mat hsvImage;
-    cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
+    // cv::Mat hsvImage;
+    // cv::cvtColor(originalMat, hsvImage, cv::COLOR_BGR2HSV);
+
+    cv::Mat hsvROI;
+    cv::cvtColor(roi, hsvROI, cv::COLOR_BGR2HSV);
 
     cv::Mat mask;
-    cv::inRange(hsvImage, cv::Scalar(hueLow, saturationLow, valueLow), cv::Scalar(hueHigh, saturationHigh, valueHigh), mask);
+    cv::inRange(hsvROI, cv::Scalar(hueLow, saturationLow, valueLow), cv::Scalar(hueHigh, saturationHigh, valueHigh), mask);
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
@@ -171,8 +174,15 @@ void MainWindow::replaceBackgroundWithImage(const cv::Mat &bgImage) {
     }
 
     modifiedMat = originalMat.clone();
-    resizedBg.copyTo(modifiedMat, finalMask);
+    resizedBg.copyTo(modifiedMat);
+    cv::Mat modifiedMatRoiCropped = lastBackgroundImageUsed(cv::Rect(ui->xSliderROI->value(), ui->ySliderROI->value(), roi.cols, roi.rows)).clone();
 
+    modifiedRoi = roi.clone();
+    cv::Scalar blackColor = cv::Scalar(0,0,0);
+    modifiedRoi.setTo(blackColor,finalMask);
+
+    cv::bitwise_or(modifiedRoi, modifiedMatRoiCropped, modifiedRoi);
+    modifiedRoi.copyTo(modifiedMat(cv::Rect(ui->xSliderROI->value(), ui->ySliderROI->value(), roi.cols, roi.rows)));
     displayImageToImageLabel(modifiedMat);
 }
 
