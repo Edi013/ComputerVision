@@ -19,14 +19,14 @@ public:
 private slots:
     void on_loadVideoButton_clicked();
     void on_processVideoButton_clicked();
-    void on_saveVideoButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     cv::Mat frame;
     std::string videoFilePath;
     std::string outputFilePath;
 
-    void processFrame(cv::Mat &frame);
+    void processFrame(cv::Mat &frame,  cv::dnn::Net &net);
     void drawSegmentation(cv::Mat &frame, const std::vector<cv::Mat> &masks);
 };
 

@@ -18,7 +18,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_loadVideoButton_clicked()
 {
     videoFilePath = QFileDialog::getOpenFileName(this, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv)").toStdString();
-    if (videoFilePath.length() == 0) {
+    if (videoFilePath.empty()) {
         QMessageBox::warning(this, "Warning", "No video file selected.");
         return;
     }
@@ -38,8 +38,8 @@ void MainWindow::on_processVideoButton_clicked()
         return;
     }
 
-    std::string modelPath = "E:\\Projects\\qt_proj\\qt\\yolov11-segmentation.onnx"
-;
+    // Load the ONNX model once
+    std::string modelPath = "E:\\Projects\\qt_proj\\qt\\yolov11-segmentation.onnx";
     cv::dnn::Net net = cv::dnn::readNetFromONNX(modelPath);
 
     cv::Size frameSize(cap.get(cv::CAP_PROP_FRAME_WIDTH), cap.get(cv::CAP_PROP_FRAME_HEIGHT));
@@ -49,7 +49,7 @@ void MainWindow::on_processVideoButton_clicked()
 
     cv::Mat frame;
     while (cap.read(frame)) {
-        processFrame(frame);
+        processFrame(frame, net);  // Pass the net to processFrame
         writer.write(frame);
     }
 
@@ -58,23 +58,16 @@ void MainWindow::on_processVideoButton_clicked()
     QMessageBox::information(this, "Success", "Video processed successfully!");
 }
 
-void MainWindow::on_saveVideoButton_clicked()
+void MainWindow::processFrame(cv::Mat &frame, cv::dnn::Net &net)
 {
-    if (outputFilePath.empty()) {
-        QMessageBox::warning(this, "Error", "No processed video to save.");
-        return;
+    // Convert frame to 8-bit grayscale if needed
+    cv::Mat grayFrame;
+    if (frame.channels() > 1) {
+        cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
+    } else {
+        grayFrame = frame;
     }
-    QString savePath = QFileDialog::getSaveFileName(this, "Save Video", "output.avi", "AVI Files (*.avi)");
-    if (!savePath.isEmpty()) {
-        QFile::copy(QString::fromStdString(outputFilePath), savePath);
-        QMessageBox::information(this, "Success", "Video saved successfully!");
-    }
-}
 
-void MainWindow::processFrame(cv::Mat &frame)
-{
-    cv::dnn::Net net = cv::dnn::readNet("E:\\Projects\\qt_proj\\qt\\yolov11-segmentation.onnx"
-);
     cv::Mat blob = cv::dnn::blobFromImage(frame, 1.0 / 255.0, cv::Size(640, 640), cv::Scalar(), true, false);
     net.setInput(blob);
 
@@ -87,8 +80,12 @@ void MainWindow::processFrame(cv::Mat &frame)
 void MainWindow::drawSegmentation(cv::Mat &frame, const std::vector<cv::Mat> &masks)
 {
     for (const auto &mask : masks) {
+        // Convert the mask to a binary image (CV_8UC1 type)
         cv::Mat binaryMask;
-        cv::threshold(mask, binaryMask, 0.5, 255, cv::THRESH_BINARY);
+        mask.convertTo(binaryMask, CV_8UC1, 255.0); // Convert the mask to 8-bit binary (0 or 255 values)
+
+        // Threshold the mask (if necessary)
+        cv::threshold(binaryMask, binaryMask, 127, 255, cv::THRESH_BINARY);
 
         std::vector<std::vector<cv::Point>> contours;
         cv::findContours(binaryMask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
