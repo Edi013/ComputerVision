@@ -22,12 +22,12 @@ private slots:
     void on_saveVideoButton_clicked();
 private:
     Ui::MainWindow *ui;
-    cv::Mat frame;  // Cadru video curent
-    std::string videoFilePath;  // Calea fișierului video original
-    std::string outputFilePath; // Calea fișierului video procesat
+    cv::Mat frame;
+    std::string videoFilePath;
+    std::string outputFilePath;
 
-    void processFrame(cv::Mat &frame);  // Funcție pentru procesarea fiecărui cadru cu YOLOv11
-    void drawSegmentation(cv::Mat &frame, const std::vector<cv::Mat> &masks);  // Desenează contururi pe cadre
+    void processFrame(cv::Mat &frame);
+    void drawSegmentation(cv::Mat &frame, const std::vector<cv::Mat> &masks);
 };
 
 #endif // MAINWINDOW_H

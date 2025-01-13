@@ -3,7 +3,6 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-// Constructor
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -11,13 +10,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 }
 
-// Destructor
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-// Încarcă fișier video
 void MainWindow::on_loadVideoButton_clicked()
 {
     videoFilePath = QFileDialog::getOpenFileName(this, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv)").toStdString();
@@ -28,7 +25,6 @@ void MainWindow::on_loadVideoButton_clicked()
     QMessageBox::information(this, "Success", "Video file loaded successfully!");
 }
 
-// Procesează fișier video folosind YOLOv11
 void MainWindow::on_processVideoButton_clicked()
 {
     if (videoFilePath.empty()) {
@@ -42,11 +38,10 @@ void MainWindow::on_processVideoButton_clicked()
         return;
     }
 
-    // Configurare YOLOv11 (folosește model preantrenat)
-    std::string modelPath = "yolov11.onnx";
+    std::string modelPath = "E:\\Projects\\qt_proj\\qt\\yolov11-segmentation.onnx"
+;
     cv::dnn::Net net = cv::dnn::readNetFromONNX(modelPath);
 
-    // Configurare video de ieșire
     cv::Size frameSize(cap.get(cv::CAP_PROP_FRAME_WIDTH), cap.get(cv::CAP_PROP_FRAME_HEIGHT));
     int fps = cap.get(cv::CAP_PROP_FPS);
     outputFilePath = videoFilePath + "_processed.avi";
@@ -54,8 +49,8 @@ void MainWindow::on_processVideoButton_clicked()
 
     cv::Mat frame;
     while (cap.read(frame)) {
-        processFrame(frame);  // Aplică YOLOv11 pe fiecare cadru
-        writer.write(frame); // Scrie cadrul procesat în fișierul de ieșire
+        processFrame(frame);
+        writer.write(frame);
     }
 
     cap.release();
@@ -63,7 +58,6 @@ void MainWindow::on_processVideoButton_clicked()
     QMessageBox::information(this, "Success", "Video processed successfully!");
 }
 
-// Salvează fișier video procesat
 void MainWindow::on_saveVideoButton_clicked()
 {
     if (outputFilePath.empty()) {
@@ -77,28 +71,25 @@ void MainWindow::on_saveVideoButton_clicked()
     }
 }
 
-// Procesare cadru video (YOLOv11)
 void MainWindow::processFrame(cv::Mat &frame)
 {
-    cv::dnn::Net net = cv::dnn::readNet("yolov11-segmentation.onnx");
+    cv::dnn::Net net = cv::dnn::readNet("E:\\Projects\\qt_proj\\qt\\yolov11-segmentation.onnx"
+);
     cv::Mat blob = cv::dnn::blobFromImage(frame, 1.0 / 255.0, cv::Size(640, 640), cv::Scalar(), true, false);
     net.setInput(blob);
 
-    // Obține predicțiile YOLOv11 (segmentare)
     std::vector<cv::Mat> outputs;
     net.forward(outputs, net.getUnconnectedOutLayersNames());
 
-    drawSegmentation(frame, outputs);  // Desenează contururile pe cadru
+    drawSegmentation(frame, outputs);
 }
 
-// Desenează contururi pentru segmentare
 void MainWindow::drawSegmentation(cv::Mat &frame, const std::vector<cv::Mat> &masks)
 {
     for (const auto &mask : masks) {
         cv::Mat binaryMask;
         cv::threshold(mask, binaryMask, 0.5, 255, cv::THRESH_BINARY);
 
-        // Extrage contururi
         std::vector<std::vector<cv::Point>> contours;
         cv::findContours(binaryMask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
