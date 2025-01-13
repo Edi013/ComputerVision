@@ -49,7 +49,7 @@ void MainWindow::on_processVideoButton_clicked()
 
     cv::Mat frame;
     while (cap.read(frame)) {
-        processFrame(frame, net);  // Pass the net to processFrame
+        processFrame(frame, net);
         writer.write(frame);
     }
 
@@ -60,7 +60,6 @@ void MainWindow::on_processVideoButton_clicked()
 
 void MainWindow::processFrame(cv::Mat &frame, cv::dnn::Net &net)
 {
-    // Convert frame to 8-bit grayscale if needed
     cv::Mat grayFrame;
     if (frame.channels() > 1) {
         cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
@@ -80,11 +79,9 @@ void MainWindow::processFrame(cv::Mat &frame, cv::dnn::Net &net)
 void MainWindow::drawSegmentation(cv::Mat &frame, const std::vector<cv::Mat> &masks)
 {
     for (const auto &mask : masks) {
-        // Convert the mask to a binary image (CV_8UC1 type)
         cv::Mat binaryMask;
-        mask.convertTo(binaryMask, CV_8UC1, 255.0); // Convert the mask to 8-bit binary (0 or 255 values)
+        mask.convertTo(binaryMask, CV_8UC1, 255.0);
 
-        // Threshold the mask (if necessary)
         cv::threshold(binaryMask, binaryMask, 127, 255, cv::THRESH_BINARY);
 
         std::vector<std::vector<cv::Point>> contours;

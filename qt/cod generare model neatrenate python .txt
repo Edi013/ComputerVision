@@ -1,0 +1,47 @@
+import torch
+import torch.nn as nn
+
+
+class YOLOv11(nn.Module):
+    def __init__(self):
+        super(YOLOv11, self).__init__()
+        # Define a simple YOLO-like architecture
+        self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1)
+        self.conv3 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
+        self.conv4 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
+        self.fc = nn.Linear(128 * 40 * 40, 1000)  # Adjust this based on the input size
+
+        self.pool = nn.MaxPool2d(2, 2)
+        self.flatten = nn.Flatten()
+
+    def forward(self, x):
+        x = self.pool(torch.relu(self.conv1(x)))
+        x = self.pool(torch.relu(self.conv2(x)))
+        x = self.pool(torch.relu(self.conv3(x)))
+        x = self.pool(torch.relu(self.conv4(x)))
+        x = self.flatten(x)
+        x = self.fc(x)
+        return x
+
+
+# Create the YOLO-like model
+model = YOLOv11()
+
+# Dummy input tensor (adjust size according to the model input size)
+dummy_input = torch.randn(1, 3, 640, 640)  # Batch size of 1, 3 channels (RGB), 640x640 image
+
+# Export to ONNX
+onnx_file = "yolov11_untrained.onnx"
+torch.onnx.export(
+    model,
+    dummy_input,
+    onnx_file,
+    opset_version=11,  # Specify the ONNX opset version
+    input_names=["input"],
+    output_names=["output"],
+    dynamic_axes={"input": {0: "batch_size"}, "output": {0: "batch_size"}}
+)
+
+print(f"YOLOv11 untrained model exported as {onnx_file}")
+
